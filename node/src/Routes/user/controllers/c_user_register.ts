@@ -10,6 +10,10 @@ type body = {
 	confirmPassword: string;
 };
 
+type result = {
+	auth_token: string;
+};
+
 const minPasswordLength = 8;
 
 export const c_user_register = async (req: Request, res: Response) => {
@@ -31,6 +35,6 @@ export const c_user_register = async (req: Request, res: Response) => {
 
 	const auth_token = sign({ _id: user._id }, process.env.JWT_SECRET!);
 
-	res.json({ auth_token });
+	res.json({ auth_token } as result);
 	return;
 };

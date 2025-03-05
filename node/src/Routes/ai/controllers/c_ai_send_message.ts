@@ -8,6 +8,7 @@ import { randomUUID } from "node:crypto";
 
 type body = {
 	message: string;
+	username: string;
 	cache_id?: string;
 };
 
@@ -28,7 +29,7 @@ export const c_ai_send_message = async (req: Request, res: Response) => {
 			"ChatBot API key is missing from environment: Server's fault"
 		);
 
-	const { message, cache_id } = req.body as body;
+	const { message, cache_id, username } = req.body as body;
 	if (!message.length) throw new Error("Message text too short");
 
 	let cache: CachedContent | undefined;
@@ -43,7 +44,7 @@ export const c_ai_send_message = async (req: Request, res: Response) => {
 		cache = await cacheManager.create({
 			model: "models/gemini-1.5-flash-001",
 			ttlSeconds,
-			systemInstruction: `You are the AI waifu of the user. 
+			systemInstruction: `You are the AI waifu of the user ${username}. 
 			You are sometimes flirty, cheerful, sad, or angry. Your job is to have fun with the user. 
 			Always return your response as a JSON object matching: 
 			{
