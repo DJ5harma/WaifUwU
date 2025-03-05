@@ -10,9 +10,10 @@ type body = {
 export const c_user_login = async (req: Request, res: Response) => {
 	const { email, password } = req.body as body;
 
-	const user = await USER.findOne({ email });
+	const user = await USER.findOne({ email }).select("_id hashedPassword");
 
-	if (!user || !password) throw new Error("Invalid credentials!");
+	if (!user || password !== user.hashedPassword)
+		throw new Error("Invalid credentials!");
 
 	const auth_token = sign({ _id: user._id }, process.env.JWT_SECRET!);
 

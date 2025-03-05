@@ -1,4 +1,3 @@
-import { Response } from "express";
 import { Request } from "express";
 import { verify } from "jsonwebtoken";
 
@@ -14,6 +13,8 @@ export const auth = (req: Request) => {
 	const { _id } = verify(auth_token, process.env.JWT_SECRET!) as {
 		_id: string;
 	};
+
+	if (_id) throw new Error("Invalid auth token");
 
 	req.body._id = _id;
 };
