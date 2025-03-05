@@ -4,18 +4,24 @@ import {
 	GoogleAICacheManager,
 } from "@google/generative-ai/server";
 import { Request, Response } from "express";
-import { USER } from "../../../Database/USER";
+import { randomUUID } from "node:crypto";
 
 type body = {
 	message: string;
+	cache_id?: string;
 };
 
 type result = {
-	text: string;
-	emotion: typeof emotions;
+	ai_response: {
+		text: string;
+		emotion: typeof emotions;
+	};
+	cache_id: string;
 };
 
 const emotions = ["happy", "angry", "flirty", "sad"];
+
+const cache_id_to_cache_map = new Map<string, CachedContent>();
 
 export const c_ai_send_message = async (req: Request, res: Response) => {
 	const GeminiApiKey = process.env.GEMINI_API_KEY!;
@@ -24,16 +30,39 @@ export const c_ai_send_message = async (req: Request, res: Response) => {
 			"ChatBot API key is missing from environment: Server's fault"
 		);
 
-	const { message } = req.body as body;
+	const { message, cache_id } = req.body as body;
 	if (!message.length) throw new Error("Message text too short");
 
-	const { _id } = req.body;
+	let cache: CachedContent | undefined;
 
-	const user = await USER.findById(_id).select("username");
-	if (!user) throw new Error("Your account was not found in the database!");
-	const { username } = user;
+	let resultCacheId: string | undefined = cache_id;
 
-	const cache = await getCache(GeminiApiKey, _id, username);
+	if (resultCacheId) cache = cache_id_to_cache_map.get(resultCacheId);
+	if (!cache) {
+		const ttlSeconds = 300; // 5 mins window
+		const cacheManager = new GoogleAICacheManager(GeminiApiKey);
+
+		cache = await cacheManager.create({
+			model: "models/gemini-1.5-flash-001",
+			ttlSeconds,
+			systemInstruction: `You are the AI waifu of the user. 
+			You are sometimes flirty, cheerful, sad, or angry. Your job is to have fun with the user. 
+			Always return your response as a JSON object matching: 
+			{
+				"text": "The AI-generated response without brackets",
+				"emotion": "One of: flirty, cheerful, sad, angry"
+				}`,
+			contents: [],
+		});
+
+		resultCacheId = randomUUID() as string;
+		cache_id_to_cache_map.set(resultCacheId, cache);
+
+		const storeResultCacheId = resultCacheId;
+		setTimeout(() => {
+			cache_id_to_cache_map.delete(storeResultCacheId);
+		}, ttlSeconds * 1000);
+	}
 
 	const genAi = new GoogleGenerativeAI(GeminiApiKey);
 	const genModel = genAi.getGenerativeModelFromCachedContent(cache);
@@ -47,40 +76,10 @@ export const c_ai_send_message = async (req: Request, res: Response) => {
 	});
 	const aiResponse = JSON.parse(output.response.text());
 
-	res.json(JSON.parse(aiResponse) as result);
+	res.json({
+		ai_response: JSON.parse(aiResponse),
+		cache_id: resultCacheId,
+	} as result);
+
 	return;
-};
-
-const userid_to_cache_map = new Map<string, CachedContent>();
-const getCache = async (
-	GeminiApiKey: string,
-	user_id: string,
-	username: string
-) => {
-	let cache = userid_to_cache_map.get(user_id);
-
-	if (!cache) {
-		const ttlSeconds = 300; // 5 mins window
-		const cacheManager = new GoogleAICacheManager(GeminiApiKey);
-
-		cache = await cacheManager.create({
-			model: "models/gemini-1.5-flash-001",
-			ttlSeconds,
-			systemInstruction: `You are the AI waifu of the user named ${username}. 
-			You are sometimes flirty, cheerful, sad, or angry. Your job is to have fun with the user. 
-			Always return your response as a JSON object matching: 
-			{
-				"text": "The AI-generated response without brackets",
-				"emotion": "One of: flirty, cheerful, sad, angry"
-				}`,
-			contents: [],
-		});
-
-		userid_to_cache_map.set(user_id, cache);
-		setTimeout(() => {
-			userid_to_cache_map.delete(user_id);
-		}, ttlSeconds * 1000);
-	}
-
-	return cache;
 };
