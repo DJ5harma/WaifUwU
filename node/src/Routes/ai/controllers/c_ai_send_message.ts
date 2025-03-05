@@ -14,12 +14,10 @@ type body = {
 type result = {
 	ai_response: {
 		text: string;
-		emotion: typeof emotions;
+		emotion: "flirty" | "cheerful" | "angry" | "sad";
 	};
 	cache_id: string;
 };
-
-const emotions = ["happy", "angry", "flirty", "sad"];
 
 const cache_id_to_cache_map = new Map<string, CachedContent>();
 
