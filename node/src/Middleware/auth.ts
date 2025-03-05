@@ -14,7 +14,7 @@ export const auth = (req: Request) => {
 		_id: string;
 	};
 
-	if (_id) throw new Error("Invalid auth token");
+	if (!_id) throw new Error("Invalid auth token");
 
 	req.body._id = _id;
 };
