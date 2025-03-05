@@ -1,2 +1,4 @@
 MONGO_URI = "mongodb://localhost:27017/WaifUwU"
 JWT_SECRET = "shhh"
+GEMINI_API_KEY = "shhh"
+SPEECHIFY_API_KEY = "shhh"

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { asyncHandler } from "../../Middleware/asyncHandler";
-import { c_user_register } from "./controllers/c_register_user";
-import { c_user_login } from "./controllers/c_login_user";
+import { c_user_register } from "./controllers/c_user_register";
+import { c_user_login } from "./controllers/c_user_login";
 
 export const r_user = Router();
 
