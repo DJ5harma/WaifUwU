@@ -5,7 +5,7 @@ type result = {
 	tts_tokens: string[];
 };
 
-export const c_ai_obtain_speech_tokens = async (_: Request, res: Response) => {
+export const c_ai_obtain_tts_tokens = async (_: Request, res: Response) => {
 	const SpeechifyApiKey = process.env.SPEECHIFY_API_KEY!;
 	if (!SpeechifyApiKey)
 		throw new Error("TTS API key is missing from environment: Server's fault");
