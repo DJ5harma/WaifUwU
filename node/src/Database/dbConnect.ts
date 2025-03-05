@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
 import { USER } from "./USER";
 
-const { MONGO_URI } = process.env;
-
 let isConnected = false;
 
-export default async function dbConnect() {
+export default async function dbConnect(MONGO_URI: string) {
 	if (isConnected) return;
 
 	try {
@@ -16,6 +14,8 @@ export default async function dbConnect() {
 		// the contiguous lines above ensure the initialization of all the models used. This will prevent the crash which happens when we try to do some operation which involves reffering to another schema while accessing a schema. Ig that mongoose automatically initializes a schema when used but doesn't when another schema's ref is given which leads to an app-level-crash. Initializing all in advance solves this problem
 
 		isConnected = db.connections[0].readyState === 1; // marks the connection var to true, preventing the whole "connecting to the db and initializing schemas" everytime they've been already performed
+
+		console.log("Mongo DB connected at", MONGO_URI);
 	} catch (error) {
 		console.error("Could not connect to MongoDB", error);
 		throw new Error("Could not connect to MongoDB");

@@ -13,6 +13,7 @@ export const USER =
 				email: {
 					type: String,
 					required: [true, "Email required"],
+					unique: true,
 				},
 				hashedPassword: {
 					type: String,

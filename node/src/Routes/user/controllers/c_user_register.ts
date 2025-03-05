@@ -36,6 +36,8 @@ export const c_user_register = async (req: Request, res: Response) => {
 		email,
 	});
 
+	user.save();
+
 	const auth_token = sign({ _id: user._id }, process.env.JWT_SECRET!);
 
 	res.json({ auth_token } as result);
