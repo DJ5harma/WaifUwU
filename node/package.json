@@ -18,6 +18,7 @@
     "mongoose": "^8.12.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.9",
     "nodemon": "^3.1.9",

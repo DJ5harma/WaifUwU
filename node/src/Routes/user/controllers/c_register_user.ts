@@ -1,4 +1,7 @@
 import { Request, Response } from "express";
+import { USER } from "../../../Database/USER";
+import { genSaltSync, hashSync } from "bcryptjs";
+import { sign } from "jsonwebtoken";
 
 type body = {
 	username: string;
@@ -9,7 +12,7 @@ type body = {
 
 const minPasswordLength = 8;
 
-export function c_user_register(req: Request, res: Response) {
+export const c_user_register = async (req: Request, res: Response) => {
 	const { username, password, email, confirmPassword } = req.body as body;
 
 	if (password.length < minPasswordLength)
@@ -17,5 +20,17 @@ export function c_user_register(req: Request, res: Response) {
 
 	if (password !== confirmPassword) throw new Error("Passwords mismatch");
 
-	// const user =
-}
+	if (await USER.exists({ email })) throw new Error("Email already registered");
+
+	const hashedPassword = hashSync(password, genSaltSync(10));
+	const user = new USER({
+		username,
+		hashedPassword,
+		email,
+	});
+
+	const auth_token = sign({ _id: user._id }, process.env.JWT_SECRET!);
+
+	res.json({ auth_token });
+	return;
+};
