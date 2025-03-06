@@ -15,7 +15,7 @@ function App() {
 			/>
 			<UserProvider>
 				<FloatWrapper>
-					<Waifu />
+					<>{/* <Waifu /> */}</>
 				</FloatWrapper>
 			</UserProvider>
 		</>

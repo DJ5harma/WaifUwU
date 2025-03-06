@@ -37,13 +37,13 @@ export const FloatWrapper = ({ children }: { children: ReactNode }) => {
 		<ctx.Provider value={{ currentChild, setCurrentChild }}>
 			{currentChild === null ? null : (
 				<div
-					className="FloatWrapper fixed top-0 left-0 w-screen h-screen flex flex-col justify-center items-start p-4"
+					className="FloatWrapper fixed top-0 left-0 w-screen h-screen flex flex-col justify-end items-start p-4 z-10"
 					style={{
 						backgroundColor: "rgba(0,0,0,0.5)",
 					}}
 				>
 					<div
-						className="p-10 rounded-xl border-2 shadow-2xl shadow-amber-600 [&>div]:text-white"
+						className="p-10 rounded-xl shadow-2xl shadow-amber-600 [&>div]:text-white"
 						style={{
 							backgroundImage:
 								"linear-gradient(to right, rgb(11, 27, 97), rgb(55, 13, 99))",

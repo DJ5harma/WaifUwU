@@ -22,10 +22,11 @@ export class api {
 		const loading = toast.loading("Talking to server...");
 		try {
 			const data = (await Api.post(endpoint, payload, config)).data;
+
 			toast.dismiss(loading);
 
 			if (data.error) {
-				toast.error(data.error);
+				toast.error("Error: " + data.error);
 				return Promise.reject(data.error);
 			}
 
@@ -33,7 +34,7 @@ export class api {
 		} catch (err) {
 			toast.dismiss(loading);
 
-			toast.error("Something went wrong! Please try again.");
+			toast.error("Error: " + (err as Error).message);
 			return Promise.reject((err as Error).message);
 		}
 	}

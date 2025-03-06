@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useUser } from "../Providers/UserProvider";
 import { api } from "../Systems/api";
 import { useFloatWrapper } from "../Wrappers/FloatWrapper";
+import { toast } from "react-toastify";
 
 export const Form = () => {
 	const [username, setUsername] = useState("");
@@ -26,6 +27,7 @@ export const Form = () => {
 				userHook.setUsername(username);
 				localStorage.setItem("auth_token", auth_token);
 				setCurrentChild(null);
+				toast.success("Registered Successfully!");
 			});
 	}
 
@@ -46,6 +48,7 @@ export const Form = () => {
 					userHook.setUsername(username);
 					localStorage.setItem("auth_token", auth_token);
 					setCurrentChild(null);
+					toast.success("Logged in Successfully!");
 				}
 			);
 	}
@@ -90,7 +93,7 @@ export const Form = () => {
 			)}
 
 			<button
-				className="w-full"
+				className="w-full cursor-pointer"
 				onClick={type === "Login" ? handleLogin : handleRegister}
 			>
 				{type}

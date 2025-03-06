@@ -13,7 +13,7 @@ export const asyncHandler = (
 			const message = (err as Error).message;
 
 			log({ err: message });
-			res.status(500).json({
+			res.json({
 				error: message || "Internal Server Error",
 			});
 			return;

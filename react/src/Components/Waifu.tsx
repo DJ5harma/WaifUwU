@@ -8,7 +8,6 @@ export const Waifu = () => {
 	return (
 		<Canvas
 			style={{
-				border: "solid red",
 				position: "absolute",
 				top: 0,
 				left: 0,

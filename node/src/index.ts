@@ -1,10 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import dbConnect from "./Database/dbConnect";
 import { log } from "console";
 import { r_user } from "./Routes/user/r_user";
 import { auth } from "./Middleware/auth";
 import { r_ai } from "./Routes/ai/r_ai";
-import dbConnect from "./Database/dbConnect";
 import { asyncHandler } from "./Middleware/asyncHandler";
 import { s_ai_messaging } from "./Routes/ai/services/s_ai_messaging";
 
@@ -16,6 +17,7 @@ const { PORT, MONGO_URI, GEMINI_API_KEY } = process.env;
 if (!PORT || !MONGO_URI || !GEMINI_API_KEY)
 	console.error("atleast 1 environment variable is not accessible!");
 else {
+	app.use(cors());
 	app.use(express.json());
 
 	dbConnect(MONGO_URI).then(() => {
