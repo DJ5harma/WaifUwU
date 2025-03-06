@@ -28,9 +28,9 @@ input {
 	min-width: 300px;
 
 	background-image: linear-gradient(
-		to right top,
-		rgb(255, 205, 205),
-		rgb(254, 255, 212)
+		to right bottom,
+		rgb(254, 255, 212),
+		rgb(240, 157, 157)
 	);
 
 	font-family: monospace;
@@ -38,10 +38,17 @@ input {
 }
 
 button {
-	padding: 12px 30px;
-	background-color: black;
+	padding: 12px;
 	color: aliceblue;
 	border-radius: 20px;
+
+	background-image: linear-gradient(
+		to right bottom,
+		rgb(189, 61, 248),
+		rgb(255, 0, 0)
+	);
+
+	cursor: pointer;
 }
 
 /*

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { RiMenuUnfold3Fill } from "react-icons/ri";
 import "../Animations/NavAnimations.css";
 import { IoSettingsSharp } from "react-icons/io5";
+import { CONFIG } from "../CONFIG";
 
 export const Nav = () => {
 	const [open, setOpen] = useState(false);
@@ -26,9 +27,8 @@ export const Nav = () => {
 							key={i}
 							className="cursor-pointer flex gap-2 items-center py-3 pl-4 pr-5 rounded-l-xl rounded-r-3xl select-none"
 							style={{
-								backgroundImage:
-									"linear-gradient(to right, rgb(11, 27, 97), rgb(55, 13, 99))",
-								boxShadow: "inset 0 0 5px 2px white",
+								backgroundImage: CONFIG.GRADIENT_1,
+								boxShadow: CONFIG.SHADOW_1,
 								animation:
 									i === 0 || open ? "show 0.5s forwards" : "hide 0.5s forwards",
 							}}

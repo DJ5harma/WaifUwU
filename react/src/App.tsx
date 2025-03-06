@@ -5,6 +5,7 @@ import { UserProvider } from "./Providers/UserProvider";
 import { FloatWrapper } from "./Wrappers/FloatWrapper";
 import { BrowserRouter } from "react-router-dom";
 import { Nav } from "./Components/Nav";
+import { MessageInput } from "./Components/MessageInput";
 
 function App() {
 	return (
@@ -21,6 +22,7 @@ function App() {
 						<>
 							<Waifu />
 							<Nav />
+							<MessageInput />
 						</>
 					</BrowserRouter>
 				</UserProvider>

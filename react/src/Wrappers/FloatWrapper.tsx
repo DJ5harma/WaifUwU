@@ -7,6 +7,7 @@ import {
 	useState,
 } from "react";
 import "../Animations/FloatWrapperAnimations.css";
+import { CONFIG } from "../CONFIG";
 
 type Context = {
 	setCurrentChild: Dispatch<SetStateAction<ReactNode>>;
@@ -29,10 +30,10 @@ export const FloatWrapper = ({ children }: { children: ReactNode }) => {
 					}}
 				>
 					<div
-						className="p-10 rounded-xl shadow-2xl shadow-amber-600 [&>div]:text-white"
+						className="p-10 rounded-xl [&>div]:text-white"
 						style={{
-							backgroundImage:
-								"linear-gradient(to right, rgb(11, 27, 97), rgb(55, 13, 99))",
+							backgroundImage: CONFIG.GRADIENT_1,
+							boxShadow: CONFIG.SHADOW_1,
 						}}
 					>
 						{currentChild}
