@@ -4,8 +4,7 @@ import {
 	Schema,
 	SchemaType,
 } from "@google/generative-ai";
-import { GEMINI_API_KEY } from "../../..";
-import { Queue } from "../utils/Queue";
+import { Queue } from "../../../Utils/Queue";
 import { randomUUID } from "node:crypto";
 
 export type Tget_bot_response = {
@@ -33,13 +32,13 @@ const schema: Schema = {
 	required: ["text", "emotion"],
 };
 
+const max_conversation_window = 5;
 const cache_id_chat_map = new Map<string, Queue>();
 
 export class s_ai_messaging {
 	private static model: GenerativeModel;
 
-	static init() {
-		const GeminiApiKey = GEMINI_API_KEY;
+	static init(GeminiApiKey: string) {
 		const genAI = new GoogleGenerativeAI(GeminiApiKey);
 		this.model = genAI.getGenerativeModel({
 			model: "gemini-2.0-flash",
@@ -61,7 +60,7 @@ export class s_ai_messaging {
 		}
 
 		cache.enqueue(`user: ${message}`);
-		if (cache.size() >= 5) cache.dequeue();
+		if (cache.size() >= max_conversation_window) cache.dequeue();
 
 		const prompt =
 			`Reply as user's Waifu according to this context with emotion: ` +
@@ -73,7 +72,7 @@ export class s_ai_messaging {
 		output.cache_id = new_cache_id;
 
 		cache.enqueue(`ai: ${output.text}`);
-		if (cache.size() >= 5) cache.dequeue();
+		if (cache.size() >= max_conversation_window) cache.dequeue();
 
 		// console.log(cache_id_chat_map);
 

@@ -11,11 +11,10 @@ import { s_ai_messaging } from "./Routes/ai/services/s_ai_messaging";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT;
-const MONGO_URI = process.env.MONGO_URI;
-export const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
+const { PORT, MONGO_URI, GEMINI_API_KEY } = process.env;
 
-if (!PORT || !MONGO_URI) console.error("environment variables not accessible!");
+if (!PORT || !MONGO_URI || !GEMINI_API_KEY)
+	console.error("atleast 1 environment variable is not accessible!");
 else {
 	app.use(express.json());
 
@@ -28,6 +27,6 @@ else {
 	app.use("/user", r_user);
 
 	app.use("/ai", asyncHandler(auth), r_ai);
-}
 
-s_ai_messaging.init();
+	s_ai_messaging.init(GEMINI_API_KEY);
+}

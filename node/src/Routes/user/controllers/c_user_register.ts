@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { USER } from "../../../Database/USER";
 import { genSaltSync, hashSync } from "bcryptjs";
 import { sign } from "jsonwebtoken";
-import { u_user_is_email } from "../utils/u_user_is_email";
+import { isEmail } from "../../../Utils/isEmail";
 
 type body = {
 	username: string;
@@ -20,7 +20,7 @@ const minPasswordLength = 8;
 export const c_user_register = async (req: Request, res: Response) => {
 	const { username, password, email, confirmPassword } = req.body as body;
 
-	if (!u_user_is_email(email)) throw new Error("Invalid email address");
+	if (!isEmail(email)) throw new Error("Invalid email address");
 
 	if (password.length < minPasswordLength)
 		throw new Error(`Password shorter than ${minPasswordLength} chars`);

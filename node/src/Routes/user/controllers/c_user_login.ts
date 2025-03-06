@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { USER } from "../../../Database/USER";
 import { sign } from "jsonwebtoken";
 import { compareSync } from "bcryptjs";
-import { u_user_is_email } from "../utils/u_user_is_email";
+import { isEmail } from "../../../Utils/isEmail";
 
 type body = {
 	email: string;
@@ -17,7 +17,7 @@ type result = {
 export const c_user_login = async (req: Request, res: Response) => {
 	const { email, password } = req.body as body;
 
-	if (!u_user_is_email(email)) throw new Error("Invalid email address");
+	if (!isEmail(email)) throw new Error("Invalid email address");
 
 	const user = await USER.findOne({ email }).select(
 		"_id hashedPassword username"

@@ -14,8 +14,7 @@ export const asyncHandler = (
 
 			log({ err: message });
 			res.status(500).json({
-				success: false,
-				message: message || "Internal Server Error",
+				error: message || "Internal Server Error",
 			});
 			return;
 		}
