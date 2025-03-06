@@ -1,27 +1,13 @@
-import {
-	createContext,
-	Dispatch,
-	ReactNode,
-	SetStateAction,
-	useContext,
-	useState,
-} from "react";
+import { ReactNode } from "react";
 import { CONFIG } from "../CONFIG";
-
-type Context = {
-	setCurrentChild: Dispatch<SetStateAction<ReactNode>>;
-};
-
-const ctx = createContext<Context>({
-	setCurrentChild: () => {},
-});
+import { useGlobal } from "../Providers/GlobalStore";
 
 export const FloatWrapper = ({ children }: { children: ReactNode }) => {
-	const [currentChild, setCurrentChild] = useState<ReactNode>(null);
+	const { floatingElement } = useGlobal();
 
 	return (
-		<ctx.Provider value={{ setCurrentChild }}>
-			{currentChild === null ? null : (
+		<>
+			{floatingElement === null ? null : (
 				<div
 					className="FloatWrapper fixed top-0 left-0 w-screen h-screen flex flex-col justify-end items-start p-4 z-10"
 					style={{
@@ -36,13 +22,11 @@ export const FloatWrapper = ({ children }: { children: ReactNode }) => {
 							boxShadow: CONFIG.SHADOW_1,
 						}}
 					>
-						{currentChild}
+						{floatingElement}
 					</div>
 				</div>
 			)}
 			{children}
-		</ctx.Provider>
+		</>
 	);
 };
-
-export const useFloatWrapper = () => useContext(ctx);

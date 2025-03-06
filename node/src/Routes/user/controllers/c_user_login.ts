@@ -28,6 +28,8 @@ export const c_user_login = async (req: Request, res: Response) => {
 
 	const auth_token = sign({ _id: user._id }, process.env.JWT_SECRET!);
 
+	console.log(user.username);
+
 	res.json({ auth_token, username: user.username } as result);
 	return;
 };

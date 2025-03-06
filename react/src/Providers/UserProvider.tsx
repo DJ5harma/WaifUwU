@@ -7,8 +7,8 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import { useFloatWrapper } from "../Wrappers/FloatWrapper";
 import { Form } from "../Components/Form";
+import { useGlobal } from "./GlobalStore";
 
 type Context = {
 	username: string;
@@ -23,15 +23,15 @@ const ctx = createContext<Context>({
 export const UserProvider = ({ children }: { children: ReactNode }) => {
 	const [username, setUsername] = useState("");
 
-	const { setCurrentChild } = useFloatWrapper();
+	const { setFloatingElement } = useGlobal();
 
 	useEffect(() => {
-		if (!username.length) localStorage.setItem("username", username);
+		if (username.length) localStorage.setItem("username", username);
 	}, [username]);
 
 	useEffect(() => {
 		const auth_token = localStorage.getItem("auth_token");
-		if (!auth_token) return setCurrentChild(<Form />);
+		if (!auth_token) return setFloatingElement(<Form />);
 
 		const stored_username = localStorage.getItem("username");
 		if (stored_username) setUsername(username);

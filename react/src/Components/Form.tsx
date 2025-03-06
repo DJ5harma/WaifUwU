@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useUser } from "../Providers/UserProvider";
 import { api } from "../Systems/api";
-import { useFloatWrapper } from "../Wrappers/FloatWrapper";
 import { toast } from "react-toastify";
+import { useGlobal } from "../Providers/GlobalStore";
 
 export const Form = () => {
 	const [username, setUsername] = useState("");
@@ -13,7 +13,7 @@ export const Form = () => {
 	const [type, setType] = useState<"Login" | "Register">("Register");
 
 	const userHook = useUser();
-	const { setCurrentChild } = useFloatWrapper();
+	const { setFloatingElement } = useGlobal();
 
 	function handleRegister() {
 		api
@@ -26,7 +26,7 @@ export const Form = () => {
 			.then(({ auth_token }: { auth_token: string }) => {
 				userHook.setUsername(username);
 				localStorage.setItem("auth_token", auth_token);
-				setCurrentChild(null);
+				setFloatingElement(null);
 				toast.success("Registered Successfully!");
 			});
 	}
@@ -47,7 +47,7 @@ export const Form = () => {
 				}) => {
 					userHook.setUsername(username);
 					localStorage.setItem("auth_token", auth_token);
-					setCurrentChild(null);
+					setFloatingElement(null);
 					toast.success("Logged in Successfully!");
 				}
 			);

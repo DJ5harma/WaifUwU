@@ -7,29 +7,32 @@ import { BrowserRouter } from "react-router-dom";
 import { Nav } from "./Components/Nav";
 import { MessageInput } from "./Components/MessageInput";
 import { WaifuProvider } from "./Providers/WaifuProvider";
+import { GlobalStore } from "./Providers/GlobalStore";
 
 function App() {
 	return (
 		<>
 			<ToastContainer
 				closeButton
-				position="bottom-right"
+				position="top-right"
 				stacked
 				toastStyle={{ backgroundColor: "rgb(10, 10, 44)", color: "white" }}
 			/>
-			<FloatWrapper>
+			<GlobalStore>
 				<UserProvider>
-					<WaifuProvider>
-						<BrowserRouter>
-							<>
-								<Waifu />
-								<Nav />
-								<MessageInput />
-							</>
-						</BrowserRouter>
-					</WaifuProvider>
+					<FloatWrapper>
+						<WaifuProvider>
+							<BrowserRouter>
+								<>
+									<Waifu />
+									<Nav />
+									<MessageInput />
+								</>
+							</BrowserRouter>
+						</WaifuProvider>
+					</FloatWrapper>
 				</UserProvider>
-			</FloatWrapper>
+			</GlobalStore>
 		</>
 	);
 }
