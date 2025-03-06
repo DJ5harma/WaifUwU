@@ -4,7 +4,7 @@ import { Loading } from "./Loading";
 import Waifu1 from "../../public/Waifu1";
 import { OrbitControls } from "@react-three/drei";
 
-function Waifu() {
+export const Waifu = () => {
 	return (
 		<Canvas
 			style={{
@@ -28,6 +28,4 @@ function Waifu() {
 			</Suspense>
 		</Canvas>
 	);
-}
-
-export default Waifu;
+};

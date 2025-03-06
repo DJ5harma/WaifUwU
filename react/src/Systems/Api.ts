@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 
 const base = "http://localhost:4000";
@@ -13,17 +13,26 @@ export class api {
 		ai_send_message: base + "/ai/send_message",
 		ai_obtain_tts_tokens: base + "/ai/obtain_tts_tokens",
 	};
-	static async req(endpoint: string, payload: Object) {
+
+	static async req(
+		endpoint: string,
+		payload: Object,
+		config?: AxiosRequestConfig<Object>
+	) {
+		const loading = toast.loading("Talking to server...");
 		try {
-			const data = (await Api.post(endpoint, payload)).data;
+			const data = (await Api.post(endpoint, payload, config)).data;
+			toast.dismiss(loading);
 
 			if (data.error) {
 				toast.error(data.error);
 				return Promise.reject(data.error);
 			}
 
-			return data as Object;
+			return data as any;
 		} catch (err) {
+			toast.dismiss(loading);
+
 			toast.error("Something went wrong! Please try again.");
 			return Promise.reject((err as Error).message);
 		}
