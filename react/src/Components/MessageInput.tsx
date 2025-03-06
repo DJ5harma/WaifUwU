@@ -13,7 +13,6 @@ export const MessageInput = () => {
 	const { setCurrentAnimation } = useWaifu();
 
 	async function handleSend() {
-		setMessage("");
 		api
 			.req(
 				api.url.ai_send_message,
@@ -34,6 +33,7 @@ export const MessageInput = () => {
 					emotion: WAIFU_ANIMATION_TYPE;
 					cache_id: string;
 				}) => {
+					setMessage("");
 					setAiResponse(text);
 					localStorage.setItem("cache_id", cache_id);
 
@@ -77,9 +77,14 @@ export const MessageInput = () => {
 					onChange={(e) => setMessage(e.target.value)}
 				/>
 
-				<button onClick={handleSend}>
-					<BiSend size={30} />
-				</button>
+				{message && (
+					<button
+						onClick={handleSend}
+						style={{ animation: "show 0.5s forwards" }}
+					>
+						<BiSend size={30} />
+					</button>
+				)}
 			</div>
 		</>
 	);
