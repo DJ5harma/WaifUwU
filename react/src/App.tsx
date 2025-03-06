@@ -12,7 +12,7 @@ function App() {
 		<>
 			<ToastContainer
 				closeButton
-				position="top-center"
+				position="bottom-right"
 				stacked
 				toastStyle={{ backgroundColor: "rgb(10, 10, 44)", color: "white" }}
 			/>

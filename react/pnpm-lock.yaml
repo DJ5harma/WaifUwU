@@ -14,6 +14,9 @@ importers:
       '@react-three/fiber':
         specifier: ^9.0.4
         version: 9.0.4(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(three@0.174.0)
+      '@speechify/api-sdk':
+        specifier: ^2.4.1
+        version: 2.4.1
       '@tailwindcss/vite':
         specifier: ^4.0.10
         version: 4.0.10(vite@6.2.0(jiti@2.4.2)(lightningcss@1.29.2))
@@ -439,6 +442,9 @@ packages:
     resolution: {integrity: sha512-AyleYRPU7+rgkMWbEh71fQlrzRfeP6SyMnRf9XX4fCdDPAJumdSBqYEcWPMzVQ4ScAl7E4oFfK0GUVn77xSwbw==}
     cpu: [x64]
     os: [win32]
+
+  '@speechify/api-sdk@2.4.1':
+    resolution: {integrity: sha512-feWF7l9z3w/pHqhSMR8wR7Te+/f4BETx85lyeWeD+xB12g0L/Q0ltoGRGYcoAb2jag9Yu/C3GC3bYk0fiw+mNQ==}
 
   '@swc/core-darwin-arm64@1.11.7':
     resolution: {integrity: sha512-3+LhCP2H50CLI6yv/lhOtoZ5B/hi7Q/23dye1KhbSDeDprLTm/KfLJh/iQqwaHUponf5m8C2U0y6DD+HGLz8Yw==}
@@ -1826,6 +1832,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.34.9':
     optional: true
+
+  '@speechify/api-sdk@2.4.1': {}
 
   '@swc/core-darwin-arm64@1.11.7':
     optional: true
