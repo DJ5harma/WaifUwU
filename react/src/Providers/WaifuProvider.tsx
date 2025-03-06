@@ -28,31 +28,22 @@ export const WaifuProvider = ({ children }: { children: ReactNode }) => {
 		useState<WAIFU_ANIMATION_TYPE>("Greeting");
 
 	useEffect(() => {
-		let temp: WAIFU_ANIMATION_TYPE = "Greeting";
 		const itvl = setInterval(() => {
-			console.log("interval ran");
-
-			switch (temp) {
-				case "Greeting": {
-					temp = "Idle";
-					break;
+			setCurrentAnimation((p) => {
+				switch (p) {
+					case "Greeting":
+						return "Idle";
+					case "Idle":
+						return "Shy";
+					case "Shy":
+						return "Angry";
+					case "Angry":
+						return "Greeting";
+					default:
+						return "Idle";
 				}
-				case "Idle":
-					temp = "Shy";
-					setCurrentAnimation("Shy");
-					break;
-				case "Shy":
-					temp = "Angry";
-					setCurrentAnimation("Angry");
-					break;
-				case "Angry":
-					temp = "Greeting";
-					setCurrentAnimation("Greeting");
-					break;
-				default:
-					break;
-			}
-			setCurrentAnimation(temp);
+			});
+			// console.log("interval ran");
 		}, 10000);
 
 		return () => {

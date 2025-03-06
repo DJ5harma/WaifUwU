@@ -14,7 +14,7 @@ export const c_ai_obtain_tts_token = async (_: Request, res: Response) => {
 	const speechify = new Speechify({ apiKey: SpeechifyApiKey });
 
 	const tokenResponse = await speechify.accessTokenIssue("audio:all");
-	console.log("speechify token expires in: ", tokenResponse.expiresIn);
+	// console.log("speechify token expires in: ", tokenResponse.expiresIn); // 3600 s, i.e. 1 hr
 
 	const token = tokenResponse.accessToken;
 	const expiry = Date.now() + tokenResponse.expiresIn * 1000;
