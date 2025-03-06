@@ -1,5 +1,5 @@
 MONGO_URI = "mongodb://localhost:27017/WaifUwU"
-JWT_SECRET = "shhh"
-GEMINI_API_KEY = "shhh"
-SPEECHIFY_API_KEY = "shhh"
+JWT_SECRET = "your-secret"
+GEMINI_API_KEY = "your-api-key"
+SPEECHIFY_API_KEY = "your-api-key"
 PORT = 4000
