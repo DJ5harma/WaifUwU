@@ -20,7 +20,7 @@ export const Waifu = () => {
 				{(() => {
 					return (
 						<>
-							<Waifu1 scale={0.5} position={[0, -8, 2]} />
+							<Waifu1 scale={0.5} position={[0, -8, 0]} />
 							<OrbitControls />
 						</>
 					);

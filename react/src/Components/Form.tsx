@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useUser } from "../Providers/UserProvider";
 import { api } from "../Systems/api";
+import { useFloatWrapper } from "../Wrappers/FloatWrapper";
 
 export const Form = () => {
 	const [username, setUsername] = useState("");
@@ -11,6 +12,7 @@ export const Form = () => {
 	const [type, setType] = useState<"Login" | "Register">("Register");
 
 	const userHook = useUser();
+	const { setCurrentChild } = useFloatWrapper();
 
 	function handleRegister() {
 		api
@@ -23,6 +25,7 @@ export const Form = () => {
 			.then(({ auth_token }: { auth_token: string }) => {
 				userHook.setUsername(username);
 				localStorage.setItem("auth_token", auth_token);
+				setCurrentChild(null);
 			});
 	}
 
@@ -42,30 +45,37 @@ export const Form = () => {
 				}) => {
 					userHook.setUsername(username);
 					localStorage.setItem("auth_token", auth_token);
+					setCurrentChild(null);
 				}
 			);
 	}
 
 	return (
-		<div>
+		<div className="flex flex-col gap-4 items-center">
+			<h1>
+				Welcome to{" "}
+				<b className="text-fuchsia-200 bg-black p-2 rounded-2xl text-xl">
+					WaifUwU 😍
+				</b>
+			</h1>
 			{type === "Register" && (
 				<input
 					type="text"
-					placeholder="Your name"
+					placeholder="Name"
 					value={username}
 					onChange={(e) => setUsername(e.target.value)}
 				/>
 			)}
 			<input
 				type="email"
-				placeholder={type === "Register" ? "Your email" : "Registered email"}
+				placeholder={type === "Register" ? "Email" : "Registered Email"}
 				value={email}
 				onChange={(e) => setEmail(e.target.value)}
 			/>
 			<input
 				type="password"
 				placeholder={
-					type === "Register" ? "Make a password" : "Registered password"
+					type === "Register" ? "Make a new Password" : "Registered Password"
 				}
 				value={password}
 				onChange={(e) => setPassword(e.target.value)}
@@ -73,23 +83,32 @@ export const Form = () => {
 			{type === "Register" && (
 				<input
 					type="password"
-					placeholder="Confirm new password"
+					placeholder="Confirm new Password"
 					value={confirmPassword}
 					onChange={(e) => setConfirmPassword(e.target.value)}
 				/>
 			)}
 
-			<button onClick={type === "Login" ? handleLogin : handleRegister}>
+			<button
+				className="w-full"
+				onClick={type === "Login" ? handleLogin : handleRegister}
+			>
 				{type}
 			</button>
 
 			{type === "Register" ? (
 				<p>
-					Already Registered? <b onClick={() => setType("Login")}>Login!</b>
+					Already Registered?{" "}
+					<b className="cursor-pointer" onClick={() => setType("Login")}>
+						Login!
+					</b>
 				</p>
 			) : (
 				<p>
-					New here? <b onClick={() => setType("Register")}>Register!</b>
+					New here?{" "}
+					<b className="cursor-pointer" onClick={() => setType("Register")}>
+						Register!
+					</b>
 				</p>
 			)}
 		</div>

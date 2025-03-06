@@ -1,22 +1,61 @@
-import { ReactNode } from "react";
+import {
+	createContext,
+	Dispatch,
+	ReactNode,
+	SetStateAction,
+	useContext,
+	useState,
+} from "react";
+import "../Animations/FloatWrapperAnimations.css";
+import { Form } from "../Components/Form";
+
+type Component = "Form" | null;
+
+type Context = {
+	currentChild: Component;
+	setCurrentChild: Dispatch<SetStateAction<Component>>;
+};
+
+const ctx = createContext<Context>({
+	currentChild: null,
+	setCurrentChild: () => {},
+});
 
 export const FloatWrapper = ({ children }: { children: ReactNode }) => {
+	const [currentChild, setCurrentChild] = useState<Component>("Form");
+
+	const show = () => {
+		switch (currentChild) {
+			case "Form":
+				return <Form />;
+			default:
+				return null;
+		}
+	};
+
 	return (
-		<div
-			style={{
-				position: "fixed",
-				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh",
-				backgroundColor: "rgba(0,0,0,0.3)",
-				display: "flex",
-				flexDirection: "column",
-				justifyContent: "center",
-				alignItems: "center",
-			}}
-		>
+		<ctx.Provider value={{ currentChild, setCurrentChild }}>
+			{currentChild === null ? null : (
+				<div
+					className="FloatWrapper fixed top-0 left-0 w-screen h-screen flex flex-col justify-center items-start p-4"
+					style={{
+						backgroundColor: "rgba(0,0,0,0.5)",
+					}}
+				>
+					<div
+						className="p-10 rounded-xl border-2 shadow-2xl shadow-amber-600 [&>div]:text-white"
+						style={{
+							backgroundImage:
+								"linear-gradient(to right, rgb(11, 27, 97), rgb(55, 13, 99))",
+						}}
+					>
+						{show()}
+					</div>
+				</div>
+			)}
 			{children}
-		</div>
+		</ctx.Provider>
 	);
 };
+
+export const useFloatWrapper = () => useContext(ctx);
