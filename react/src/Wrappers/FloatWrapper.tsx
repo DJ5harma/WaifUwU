@@ -7,34 +7,20 @@ import {
 	useState,
 } from "react";
 import "../Animations/FloatWrapperAnimations.css";
-import { Form } from "../Components/Form";
-
-type Component = "Form" | null;
 
 type Context = {
-	currentChild: Component;
-	setCurrentChild: Dispatch<SetStateAction<Component>>;
+	setCurrentChild: Dispatch<SetStateAction<ReactNode>>;
 };
 
 const ctx = createContext<Context>({
-	currentChild: null,
 	setCurrentChild: () => {},
 });
 
 export const FloatWrapper = ({ children }: { children: ReactNode }) => {
-	const [currentChild, setCurrentChild] = useState<Component>("Form");
-
-	const show = () => {
-		switch (currentChild) {
-			case "Form":
-				return <Form />;
-			default:
-				return null;
-		}
-	};
+	const [currentChild, setCurrentChild] = useState<ReactNode>(null);
 
 	return (
-		<ctx.Provider value={{ currentChild, setCurrentChild }}>
+		<ctx.Provider value={{ setCurrentChild }}>
 			{currentChild === null ? null : (
 				<div
 					className="FloatWrapper fixed top-0 left-0 w-screen h-screen flex flex-col justify-end items-start p-4 z-10"
@@ -49,7 +35,7 @@ export const FloatWrapper = ({ children }: { children: ReactNode }) => {
 								"linear-gradient(to right, rgb(11, 27, 97), rgb(55, 13, 99))",
 						}}
 					>
-						{show()}
+						{currentChild}
 					</div>
 				</div>
 			)}

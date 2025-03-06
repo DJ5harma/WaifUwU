@@ -27,7 +27,7 @@ export class api {
 
 			if (data.error) {
 				toast.error("Error: " + data.error);
-				return Promise.reject(data.error);
+				return Promise.reject();
 			}
 
 			return data as any;
@@ -35,7 +35,7 @@ export class api {
 			toast.dismiss(loading);
 
 			toast.error("Error: " + (err as Error).message);
-			return Promise.reject((err as Error).message);
+			return Promise.reject();
 		}
 	}
 }

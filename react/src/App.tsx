@@ -3,6 +3,8 @@ import { ToastContainer } from "react-toastify";
 import { Waifu } from "./Components/Waifu";
 import { UserProvider } from "./Providers/UserProvider";
 import { FloatWrapper } from "./Wrappers/FloatWrapper";
+import { BrowserRouter } from "react-router-dom";
+import { Nav } from "./Components/Nav";
 
 function App() {
 	return (
@@ -13,11 +15,16 @@ function App() {
 				stacked
 				toastStyle={{ backgroundColor: "rgb(10, 10, 44)", color: "white" }}
 			/>
-			<UserProvider>
-				<FloatWrapper>
-					<>{/* <Waifu /> */}</>
-				</FloatWrapper>
-			</UserProvider>
+			<FloatWrapper>
+				<UserProvider>
+					<BrowserRouter>
+						<>
+							<Waifu />
+							<Nav />
+						</>
+					</BrowserRouter>
+				</UserProvider>
+			</FloatWrapper>
 		</>
 	);
 }
