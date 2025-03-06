@@ -4,13 +4,14 @@ Command: npx gltfjsx@6.5.3 -t public/models/67c9ceacc959f55d6cdf4344.glb -o src/
 */
 
 // import * as THREE from "three";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useGraph } from "@react-three/fiber";
 import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
 import {
 	//  GLTF,
 	SkeletonUtils,
 } from "three-stdlib";
+import { useWaifu, WAIFU_ANIMATION_TYPE } from "../Providers/WaifuProvider";
 
 // type GLTFResult = GLTF & {
 // 	nodes: {
@@ -45,6 +46,8 @@ export function Avatar(props: React.JSX.IntrinsicElements["group"]) {
 	const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
 	const { nodes, materials } = useGraph(clone) as GLTFResult;
 
+	const { currentAnimation } = useWaifu();
+
 	const { animations: idleAnimation } = useFBX("/animations/Standing Idle.fbx");
 	const { animations: angryAnimation } = useFBX("/animations/Angry.fbx");
 	const { animations: shyAnimation } = useFBX("/animations/Bashful.fbx");
@@ -53,13 +56,12 @@ export function Avatar(props: React.JSX.IntrinsicElements["group"]) {
 	);
 	const { animations: talkingAnimation } = useFBX("/animations/Talking.fbx");
 
-	idleAnimation[0].name = "Idle";
-	angryAnimation[0].name = "Angry";
-	shyAnimation[0].name = "Shy";
-	greetingAnimation[0].name = "Greeting";
-	talkingAnimation[0].name = "Talking";
+	idleAnimation[0].name = "Idle" as WAIFU_ANIMATION_TYPE;
+	angryAnimation[0].name = "Angry" as WAIFU_ANIMATION_TYPE;
+	shyAnimation[0].name = "Shy" as WAIFU_ANIMATION_TYPE;
+	greetingAnimation[0].name = "Greeting" as WAIFU_ANIMATION_TYPE;
+	talkingAnimation[0].name = "Talking" as WAIFU_ANIMATION_TYPE;
 
-	const [animation, setAnimation] = useState("Talking");
 	const group = useRef<any>(null) as any;
 	const { actions } = useAnimations(
 		[
@@ -73,11 +75,11 @@ export function Avatar(props: React.JSX.IntrinsicElements["group"]) {
 	);
 
 	useEffect(() => {
-		actions[animation]?.reset().fadeIn(0.5).play();
+		actions[currentAnimation]?.reset().fadeIn(0.5).play();
 		return () => {
-			actions[animation]?.fadeOut(0.5);
+			actions[currentAnimation]?.fadeOut(0.5);
 		};
-	}, [animation]);
+	}, [currentAnimation]);
 
 	return (
 		<group {...props} dispose={null} ref={group}>

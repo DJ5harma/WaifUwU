@@ -6,6 +6,7 @@ import { FloatWrapper } from "./Wrappers/FloatWrapper";
 import { BrowserRouter } from "react-router-dom";
 import { Nav } from "./Components/Nav";
 import { MessageInput } from "./Components/MessageInput";
+import { WaifuProvider } from "./Providers/WaifuProvider";
 
 function App() {
 	return (
@@ -18,13 +19,15 @@ function App() {
 			/>
 			<FloatWrapper>
 				<UserProvider>
-					<BrowserRouter>
-						<>
-							<Waifu />
-							<Nav />
-							<MessageInput />
-						</>
-					</BrowserRouter>
+					<WaifuProvider>
+						<BrowserRouter>
+							<>
+								<Waifu />
+								<Nav />
+								<MessageInput />
+							</>
+						</BrowserRouter>
+					</WaifuProvider>
 				</UserProvider>
 			</FloatWrapper>
 		</>

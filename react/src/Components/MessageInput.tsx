@@ -3,11 +3,14 @@ import { CONFIG } from "../CONFIG";
 import { useState } from "react";
 import { api } from "../Systems/api";
 import { Synthesis } from "../Systems/Synthesis";
+import { useWaifu } from "../Providers/WaifuProvider";
 
 export const MessageInput = () => {
 	const [message, setMessage] = useState("");
 
 	const [aiResponse, setAiResponse] = useState("");
+
+	const { setCurrentAnimation } = useWaifu();
 
 	async function handleSend() {
 		setMessage("");
@@ -27,9 +30,11 @@ export const MessageInput = () => {
 
 				const audio = await Synthesis.get_audio(text);
 				audio.play();
+				setCurrentAnimation("Talking");
 
 				audio.addEventListener("ended", () => {
 					setAiResponse("");
+					setCurrentAnimation("Idle");
 				});
 			});
 	}

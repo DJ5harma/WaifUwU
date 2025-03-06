@@ -19,16 +19,10 @@ export const Waifu = () => {
 			camera={{ fov: 15 }}
 		>
 			<Suspense fallback={<Loading loading_message="Loading 3D model..." />}>
-				{(() => {
-					return (
-						<>
-							<OrbitControls />
+				<OrbitControls />
 
-							<Avatar position={[0, -1.5, 1]} />
-							<Environment preset="sunset" />
-						</>
-					);
-				})()}
+				<Avatar position={[0, -1.5, 1]} />
+				<Environment preset="sunset" />
 			</Suspense>
 		</Canvas>
 	);
