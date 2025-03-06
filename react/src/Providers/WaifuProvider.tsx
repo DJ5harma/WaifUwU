@@ -44,7 +44,7 @@ export const WaifuProvider = ({ children }: { children: ReactNode }) => {
 				}
 			});
 			// console.log("interval ran");
-		}, 10000);
+		}, 12000);
 
 		return () => {
 			clearInterval(itvl);

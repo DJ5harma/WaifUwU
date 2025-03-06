@@ -7,9 +7,11 @@ import {
 import { Queue } from "../../../Utils/Queue";
 import { randomUUID } from "node:crypto";
 
+type WAIFU_ANIMATION_TYPE = "Idle" | "Angry" | "Shy" | "Greeting" | "Talking";
+
 export type Tget_bot_response = {
 	text: string;
-	emotion: "flirty" | "cheerful" | "angry" | "sad";
+	emotion: WAIFU_ANIMATION_TYPE;
 	cache_id: string;
 };
 
@@ -25,7 +27,7 @@ const schema: Schema = {
 		emotion: {
 			type: SchemaType.STRING,
 			description: "The emotion associated with the response",
-			enum: ["flirty", "cheerful", "angry", "sad"], // Emotion Enum
+			enum: ["Idle", "Angry", "Shy", "Greeting"], // Emotion Enum
 			nullable: false,
 		},
 	},

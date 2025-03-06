@@ -3,7 +3,7 @@ import { CONFIG } from "../CONFIG";
 import { useState } from "react";
 import { api } from "../Systems/api";
 import { Synthesis } from "../Systems/Synthesis";
-import { useWaifu } from "../Providers/WaifuProvider";
+import { useWaifu, WAIFU_ANIMATION_TYPE } from "../Providers/WaifuProvider";
 
 export const MessageInput = () => {
 	const [message, setMessage] = useState("");
@@ -24,19 +24,29 @@ export const MessageInput = () => {
 				},
 				"She is thinking..."
 			)
-			.then(async ({ text, emotion, cache_id }) => {
-				setAiResponse(text);
-				localStorage.setItem("cache_id", cache_id);
+			.then(
+				async ({
+					text,
+					emotion,
+					cache_id,
+				}: {
+					text: string;
+					emotion: WAIFU_ANIMATION_TYPE;
+					cache_id: string;
+				}) => {
+					setAiResponse(text);
+					localStorage.setItem("cache_id", cache_id);
 
-				const audio = await Synthesis.get_audio(text);
-				audio.play();
-				setCurrentAnimation("Talking");
+					const audio = await Synthesis.get_audio(text);
+					audio.play();
+					setCurrentAnimation("Talking");
 
-				audio.addEventListener("ended", () => {
-					setAiResponse("");
-					setCurrentAnimation("Idle");
-				});
-			});
+					audio.addEventListener("ended", () => {
+						setAiResponse("");
+						setCurrentAnimation(emotion);
+					});
+				}
+			);
 	}
 
 	return (
