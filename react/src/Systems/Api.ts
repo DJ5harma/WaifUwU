@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { toast } from "react-toastify";
 
 const base = "http://localhost:4000";
@@ -11,7 +11,7 @@ export class api {
 		user_login: base + "/user/login",
 		//
 		ai_send_message: base + "/ai/send_message",
-		ai_obtain_tts_tokens: base + "/ai/obtain_tts_tokens",
+		ai_obtain_tts_token: base + "/ai/obtain_tts_tokens",
 	};
 
 	static async req(endpoint: string, payload: Object, message?: string) {
