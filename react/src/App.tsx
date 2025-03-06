@@ -1,4 +1,4 @@
-import "./App.css";
+import "./Animations.css";
 import { ToastContainer } from "react-toastify";
 import { Waifu } from "./Components/Waifu";
 import { UserProvider } from "./Providers/UserProvider";

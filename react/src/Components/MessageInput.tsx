@@ -10,12 +10,17 @@ export const MessageInput = () => {
 	const [aiResponse, setAiResponse] = useState("");
 
 	async function handleSend() {
+		setMessage("");
 		api
-			.req(api.url.ai_send_message, {
-				message,
-				auth_token: localStorage.getItem("auth_token"),
-				cache_id: localStorage.getItem("cache_id"),
-			})
+			.req(
+				api.url.ai_send_message,
+				{
+					message,
+					auth_token: localStorage.getItem("auth_token"),
+					cache_id: localStorage.getItem("cache_id"),
+				},
+				"She is thinking..."
+			)
 			.then(async ({ text, emotion, cache_id }) => {
 				setAiResponse(text);
 				localStorage.setItem("cache_id", cache_id);
@@ -37,6 +42,7 @@ export const MessageInput = () => {
 					style={{
 						backgroundImage: CONFIG.GRADIENT_1,
 						boxShadow: CONFIG.SHADOW_1,
+						animation: "show 1s forwards",
 					}}
 				>
 					<p>{aiResponse}</p>

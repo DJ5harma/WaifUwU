@@ -14,14 +14,10 @@ export class api {
 		ai_obtain_tts_tokens: base + "/ai/obtain_tts_tokens",
 	};
 
-	static async req(
-		endpoint: string,
-		payload: Object,
-		config?: AxiosRequestConfig<Object>
-	) {
-		const loading = toast.loading("Talking to server...");
+	static async req(endpoint: string, payload: Object, message?: string) {
+		const loading = toast.loading(message || "Talking to server...");
 		try {
-			const data = (await Api.post(endpoint, payload, config)).data;
+			const data = (await Api.post(endpoint, payload)).data;
 
 			toast.dismiss(loading);
 

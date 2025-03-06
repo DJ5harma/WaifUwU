@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { RiMenuUnfold3Fill } from "react-icons/ri";
-import "../Animations/NavAnimations.css";
 import { IoSettingsSharp } from "react-icons/io5";
 import { CONFIG } from "../CONFIG";
 

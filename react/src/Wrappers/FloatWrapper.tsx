@@ -6,7 +6,6 @@ import {
 	useContext,
 	useState,
 } from "react";
-import "../Animations/FloatWrapperAnimations.css";
 import { CONFIG } from "../CONFIG";
 
 type Context = {
@@ -27,6 +26,7 @@ export const FloatWrapper = ({ children }: { children: ReactNode }) => {
 					className="FloatWrapper fixed top-0 left-0 w-screen h-screen flex flex-col justify-end items-start p-4 z-10"
 					style={{
 						backgroundColor: "rgba(0,0,0,0.5)",
+						animation: "flicker 1s infinite",
 					}}
 				>
 					<div
