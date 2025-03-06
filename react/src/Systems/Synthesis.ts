@@ -19,7 +19,7 @@ export class Synthesis {
 		}
 	};
 
-	static ensure_token = async () => {
+	private static ensure_token = async () => {
 		const fetch_tts_token = async () => {
 			const auth_token = localStorage.getItem("auth_token");
 			if (!auth_token) return false;

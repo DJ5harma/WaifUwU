@@ -51,10 +51,6 @@ export const WaifuProvider = ({ children }: { children: ReactNode }) => {
 		};
 	}, []);
 
-	useEffect(() => {
-		console.log({ currentAnimation });
-	}, [currentAnimation]);
-
 	return (
 		<ctx.Provider value={{ currentAnimation, setCurrentAnimation }}>
 			{children}
