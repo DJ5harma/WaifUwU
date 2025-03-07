@@ -26,6 +26,10 @@ else {
 		});
 	});
 
+	app.get("/test", (_, res) => {
+		res.json({ server: "is on", communication: "is working" });
+	});
+
 	app.use("/user", r_user);
 
 	app.use("/ai", asyncHandler(auth), r_ai);

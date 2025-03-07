@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const base = "http://localhost:4000";
+const base = import.meta.env.VITE_BACKEND_URL;
 const Api = axios.create({ baseURL: base });
 
 export class api {
@@ -33,6 +33,11 @@ export class api {
 			toast.error("Error: " + (err as Error).message);
 			return Promise.reject();
 		}
+	}
+
+	static async test_server() {
+		const res = await Api.get(base + "/test");
+		console.log(res.data);
 	}
 }
 
