@@ -12,11 +12,11 @@ Why chase real life women when you can have this computer-Waifu ???
 
 ### To run/develop locally,
 
-1. Install pnpm on machine (recommended)
+1. Install node.js on machine
 2. Goto "node/"
-3. Add your API keys and MONGO_URI in a .env file (refer to .envSample) and run `pnpm i && pnpm run dev`
+3. Add your API keys and MONGO_URI in a .env file (refer to .envSample) and run `npm i && npm run dev`
 4. Goto "react/"
-5. Run `pnpm i && pnpm run dev` and you should see vite give a port: http://localhost:3000 or similar.
+5. Run `npm i && npm run dev` and you should see vite give a port: http://localhost:3000 or similar.
 6. Go there and enjoy !
 
 ### APIs used as of writing:
