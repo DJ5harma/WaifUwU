@@ -4,7 +4,7 @@ import { SpeechifyService } from '../services/speechify';
 import { useWaifu } from '../Providers/WaifuProvider';
 import { useAuth } from '../hooks/useAuth';
 import { ConversationSidebar } from './ConversationSidebar';
-import { FiSend, FiTrash2, FiMinimize2, FiMaximize2, FiMenu } from 'react-icons/fi';
+import { FiSend, FiTrash2, FiMinimize2, FiMaximize2, FiMenu, FiVolume2 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export const ChatInterface = () => {
@@ -56,6 +56,44 @@ export const ChatInterface = () => {
 			timestamp: new Date(),
 		}]);
 		toast.success('New conversation started');
+	};
+
+	const playAudioFromUrl = async (audioUrl: string, emotion: string) => {
+		// Stop current audio if playing
+		if (currentAudio) {
+			currentAudio.pause();
+			currentAudio.currentTime = 0;
+		}
+
+		try {
+			const audio = new Audio(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${audioUrl}`);
+			setCurrentAudio(audio);
+
+			// Set animation to Talking
+			setCurrentAnimation('Talking');
+			setIsSpeaking(true);
+
+			audio.onended = () => {
+				const validEmotions = ['Idle', 'Angry', 'Shy', 'Greeting', 'Talking'];
+				const nextAnimation = validEmotions.includes(emotion) ? emotion : 'Idle';
+				setCurrentAnimation(nextAnimation as 'Idle' | 'Angry' | 'Shy' | 'Greeting' | 'Talking');
+				setCurrentAudio(null);
+				setIsSpeaking(false);
+			};
+
+			audio.onerror = () => {
+				console.error('Audio playback error');
+				setCurrentAnimation('Idle');
+				setCurrentAudio(null);
+				setIsSpeaking(false);
+			};
+
+			await audio.play();
+		} catch (error) {
+			console.error('Audio playback failed:', error);
+			setCurrentAnimation('Idle');
+			setIsSpeaking(false);
+		}
 	};
 
 	const playAudio = async (text: string, voiceId: string, emotion: string) => {
@@ -142,12 +180,17 @@ export const ChatInterface = () => {
 				role: 'assistant',
 				content: response.response,
 				timestamp: new Date(),
+				audioUrl: response.audioUrl || null,
 			};
 
 			setMessages(prev => [...prev, assistantMessage]);
 
-			// Play audio and animate
-			await playAudio(response.response, response.voiceId || 'kristy', response.emotion);
+			// Play audio and animate - use cached URL if available
+			if (response.audioUrl) {
+				await playAudioFromUrl(response.audioUrl, response.emotion);
+			} else {
+				await playAudio(response.response, response.voiceId || 'kristy', response.emotion);
+			}
 
 		} catch (error) {
 			console.error('Failed to send message:', error);
@@ -270,28 +313,39 @@ export const ChatInterface = () => {
 					{messages.map((msg, idx) => (
 						<div
 							key={idx}
-							className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+							className={`group flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
 						>
 							<div
-								className={`max-w-[80%] p-3 rounded-2xl ${msg.role === 'user'
+								className={`max-w-[80%] p-3 rounded-2xl relative ${msg.role === 'user'
 									? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
 									: 'bg-slate-800/80 text-purple-100 border border-purple-500/30'
 									}`}
 							>
 								<p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-								{msg.timestamp && (
-									<p className="text-xs opacity-60 mt-1">
-										{(() => {
-											const date = new Date(msg.timestamp);
-											return isNaN(date.getTime()) 
-												? 'Just now'
-												: date.toLocaleTimeString([], {
-													hour: '2-digit',
-													minute: '2-digit'
-												});
-										})()}
-									</p>
-								)}
+								<div className="flex items-center justify-between gap-2 mt-1">
+									{msg.timestamp && (
+										<p className="text-xs opacity-60">
+											{(() => {
+												const date = new Date(msg.timestamp);
+												return isNaN(date.getTime()) 
+													? 'Just now'
+													: date.toLocaleTimeString([], {
+														hour: '2-digit',
+														minute: '2-digit'
+													});
+											})()}
+										</p>
+									)}
+									{msg.role === 'assistant' && msg.audioUrl && (
+										<button
+											onClick={() => playAudioFromUrl(msg.audioUrl!, 'Talking')}
+											className="opacity-0 group-hover:opacity-100 p-1 hover:bg-purple-500/20 rounded transition-all text-purple-300 hover:text-white"
+											title="Replay audio"
+										>
+											<FiVolume2 size={14} />
+										</button>
+									)}
+								</div>
 							</div>
 						</div>
 					))}

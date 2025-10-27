@@ -5,6 +5,7 @@ import { User } from '../models/User.js';
 import { geminiService } from '../services/geminiService.js';
 import { speechifyService } from '../services/speechifyService.js';
 import { cacheService } from '../services/cacheService.js';
+import { audioStorageService } from '../services/audioStorageService.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
 import crypto from 'crypto';
 
@@ -98,7 +99,7 @@ router.post('/message', optionalAuth, async (req, res) => {
 			});
 		}
 
-		// Create assistant message
+		// Create assistant message (save first to get ID)
 		const assistantMessage = new Message({
 			conversationId: conversation._id,
 			userId: userId || conversation.userId,
@@ -111,6 +112,28 @@ router.post('/message', optionalAuth, async (req, res) => {
 			}
 		});
 		await assistantMessage.save();
+
+		// Generate and store audio
+		let audioUrl = null;
+		try {
+			const voiceId = conversation.settings.voice || 'kristy';
+			
+			// Check if audio already exists
+			audioUrl = audioStorageService.getAudioUrl(assistantMessage._id.toString(), voiceId);
+			
+			if (!audioUrl) {
+				// Generate new audio
+				const audioBuffer = await speechifyService.generateAudioBuffer(aiResponse, voiceId);
+				audioUrl = await audioStorageService.saveAudio(audioBuffer, assistantMessage._id.toString(), voiceId);
+				
+				// Update message with audio URL
+				assistantMessage.metadata.audioUrl = audioUrl;
+				await assistantMessage.save();
+			}
+		} catch (audioError) {
+			console.error('Audio generation failed:', audioError);
+			// Continue without audio - not critical
+		}
 
 		// Update conversation stats
 		const responseTime = Date.now() - startTime;
@@ -138,6 +161,7 @@ router.post('/message', optionalAuth, async (req, res) => {
 			emotion,
 			voiceId: conversation.settings.voice,
 			messageId: assistantMessage._id,
+			audioUrl,
 			cached: !!cachedResponse,
 			responseTime
 		});

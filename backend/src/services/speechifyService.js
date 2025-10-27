@@ -42,6 +42,34 @@ export class SpeechifyService {
 			return [];
 		}
 	}
+
+	/**
+	 * Generate audio buffer from text
+	 * @param {string} text - Text to convert to speech
+	 * @param {string} voiceId - Voice ID to use
+	 * @returns {Promise<Buffer>} Audio buffer
+	 */
+	async generateAudioBuffer(text, voiceId = 'kristy') {
+		try {
+			const audioResponse = await this.client.generateAudioFiles({
+				voiceId,
+				input: text,
+				audioFormat: 'mp3'
+			});
+
+			// The SDK returns audio data - convert to buffer
+			// Note: Actual implementation depends on Speechify SDK response format
+			// This is a placeholder - adjust based on actual SDK response
+			if (audioResponse.audioData) {
+				return Buffer.from(audioResponse.audioData);
+			}
+			
+			throw new Error('No audio data in response');
+		} catch (error) {
+			console.error('Audio generation error:', error);
+			throw new Error('Failed to generate audio');
+		}
+	}
 }
 
 export const speechifyService = new SpeechifyService();
