@@ -1,5 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import { Waifu } from "./Components/Waifu";
+import { ChatInterface } from "./Components/ChatInterface";
 import { BrowserRouter } from "react-router-dom";
 import { WaifuProvider } from "./Providers/WaifuProvider";
 
@@ -15,6 +16,7 @@ function App() {
 			<WaifuProvider>
 				<BrowserRouter>
 					<Waifu />
+					<ChatInterface />
 				</BrowserRouter>
 			</WaifuProvider>
 		</>

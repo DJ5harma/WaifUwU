@@ -1,0 +1,26 @@
+{
+  "name": "waifuwu",
+  "version": "1.0.0",
+  "description": "AI Talking Waifu Chatbot with 3D Animation",
+  "private": true,
+  "scripts": {
+    "setup": "npm install --prefix backend && npm install --prefix react",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd react && npm run dev",
+    "start:backend": "cd backend && npm start",
+    "build:frontend": "cd react && npm run build",
+    "preview:frontend": "cd react && npm run preview"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "waifu",
+    "3d",
+    "gemini",
+    "speechify",
+    "react",
+    "threejs"
+  ],
+  "author": "DJ5harma",
+  "license": "MIT"
+}
