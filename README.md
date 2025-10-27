@@ -100,7 +100,7 @@ npm install
 
 Create a `.env` file in the `backend` directory:
 ```env
-PORT=5000
+PORT=4000
 MONGODB_URI=mongodb://localhost:27017/waifuwu
 JWT_SECRET=your_super_secret_jwt_key_here
 GEMINI_API_KEY=your_gemini_api_key_here
@@ -120,7 +120,7 @@ npm install
 
 Create a `.env` file in the `react` directory:
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=http://localhost:4000
 VITE_SPEECHIFY_API_KEY=your_speechify_api_key_here
 ```
 
