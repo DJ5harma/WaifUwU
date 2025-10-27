@@ -5,7 +5,7 @@ import { useWaifu } from '../Providers/WaifuProvider';
 import { useAuth } from '../hooks/useAuth';
 import { ConversationSidebar } from './ConversationSidebar';
 import { AudioPlayer } from './AudioPlayer';
-import { FiSend, FiTrash2, FiMinimize2, FiMaximize2, FiMenu, FiVolume2, FiCopy, FiRefreshCw } from 'react-icons/fi';
+import { FiSend, FiMinimize2, FiMaximize2, FiMenu, FiVolume2, FiCopy, FiRefreshCw } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export const ChatInterface = () => {
@@ -35,6 +35,25 @@ export const ChatInterface = () => {
 		SpeechifyService.init();
 	}, []);
 
+	// Auto-load last conversation on mount
+	useEffect(() => {
+		const loadLastConversation = async () => {
+			if (!isAuthenticated) return;
+
+			try {
+				const data = await chatAPI.getConversations(1, 1);
+				if (data.conversations.length > 0) {
+					const lastConversation = data.conversations[0];
+					await loadConversation(lastConversation._id);
+				}
+			} catch (error) {
+				console.error('Failed to load last conversation:', error);
+			}
+		};
+
+		loadLastConversation();
+	}, [isAuthenticated]);
+
 	// Auto-scroll to bottom
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -44,7 +63,7 @@ export const ChatInterface = () => {
 		try {
 			const data = await chatAPI.getConversation(conversationId);
 			setSessionId(data.conversation._id);
-			
+
 			// Map backend messages to frontend format (extract audioUrl from metadata)
 			const mappedMessages = data.messages.map((msg: BackendMessage): Message => ({
 				_id: msg._id,
@@ -53,7 +72,7 @@ export const ChatInterface = () => {
 				timestamp: new Date(msg.createdAt || msg.timestamp || Date.now()),
 				audioUrl: msg.metadata?.audioUrl || null,
 			}));
-			
+
 			setMessages(mappedMessages);
 		} catch (error) {
 			console.error('Failed to load conversation:', error);
@@ -115,7 +134,7 @@ export const ChatInterface = () => {
 
 	const handleAudioPlayPause = () => {
 		if (!currentAudio) return;
-		
+
 		if (isSpeaking) {
 			currentAudio.pause();
 			setIsSpeaking(false);
@@ -257,24 +276,6 @@ export const ChatInterface = () => {
 		}
 	};
 
-	const clearChat = async () => {
-		if (!sessionId) return;
-
-		try {
-			await chatAPI.deleteConversation(sessionId);
-			setSessionId(null);
-			setMessages([{
-				role: 'assistant',
-				content: "Hi there! I'm your AI waifu assistant. How can I help you today? 💫",
-				timestamp: new Date(),
-			}]);
-			toast.success('Conversation cleared');
-		} catch (error) {
-			console.error('Failed to clear conversation:', error);
-			toast.error('Failed to clear conversation');
-		}
-	};
-
 	const handleKeyPress = (e: React.KeyboardEvent) => {
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
@@ -368,13 +369,6 @@ export const ChatInterface = () => {
 					</div>
 					<div className="flex gap-2">
 						<button
-							onClick={clearChat}
-							className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300 hover:text-white"
-							title="Clear conversation"
-						>
-							<FiTrash2 size={18} />
-						</button>
-						<button
 							onClick={() => setIsMinimized(true)}
 							className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300 hover:text-white"
 							title="Minimize"
@@ -398,13 +392,13 @@ export const ChatInterface = () => {
 									}`}
 							>
 								<p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-								
+
 								{/* Timestamp */}
 								{msg.timestamp && (
 									<p className="text-xs opacity-60 mt-2">
 										{(() => {
 											const date = new Date(msg.timestamp);
-											return isNaN(date.getTime()) 
+											return isNaN(date.getTime())
 												? 'Just now'
 												: date.toLocaleTimeString([], {
 													hour: '2-digit',
