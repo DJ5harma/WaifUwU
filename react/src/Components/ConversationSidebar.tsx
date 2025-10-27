@@ -155,10 +155,7 @@ export const ConversationSidebar = ({
 							<div className="flex items-start justify-between gap-2">
 								<div className="flex-1 min-w-0">
 									<p className="text-white text-sm font-medium truncate">
-										{conversation.personality 
-											? conversation.personality.charAt(0).toUpperCase() + conversation.personality.slice(1) + ' Chat'
-											: 'Conversation'
-										}
+										{conversation.title || 'New Conversation'}
 									</p>
 									{conversation.lastMessage && (
 										<p className="text-purple-300/70 text-xs truncate mt-1">

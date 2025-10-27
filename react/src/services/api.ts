@@ -27,6 +27,20 @@ export interface Message {
 	audioUrl?: string | null;
 }
 
+export interface BackendMessage {
+	_id: string;
+	role: 'user' | 'assistant' | 'system';
+	content: string;
+	createdAt: string;
+	timestamp?: string;
+	metadata?: {
+		audioUrl?: string | null;
+		emotion?: string;
+		tokens?: number;
+		cached?: boolean;
+	};
+}
+
 export interface ChatResponse {
 	conversationId: string;
 	sessionId: string;
@@ -47,7 +61,7 @@ export interface ConversationHistory {
 export interface NewConversationResponse {
 	conversation: {
 		_id: string;
-		personality: string;
+		title: string;
 		createdAt: Date;
 	};
 	message: Message;
@@ -88,7 +102,7 @@ export interface UserResponse {
 export interface ConversationsResponse {
 	conversations: Array<{
 		_id: string;
-		personality: string;
+		title: string;
 		lastMessage?: string;
 		updatedAt: Date;
 		createdAt: Date;
@@ -101,10 +115,10 @@ export interface ConversationsResponse {
 export interface ConversationDetailResponse {
 	conversation: {
 		_id: string;
-		personality: string;
+		title: string;
 		createdAt: Date;
 	};
-	messages: Message[];
+	messages: BackendMessage[];
 }
 
 export interface Voice {

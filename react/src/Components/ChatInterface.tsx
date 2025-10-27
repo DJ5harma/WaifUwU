@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { chatAPI, Message, ChatResponse } from '../services/api';
+import { chatAPI, Message, ChatResponse, BackendMessage } from '../services/api';
 import { SpeechifyService } from '../services/speechify';
 import { useWaifu } from '../Providers/WaifuProvider';
 import { useAuth } from '../hooks/useAuth';
 import { ConversationSidebar } from './ConversationSidebar';
-import { FiSend, FiTrash2, FiMinimize2, FiMaximize2, FiMenu, FiVolume2 } from 'react-icons/fi';
+import { AudioPlayer } from './AudioPlayer';
+import { FiSend, FiTrash2, FiMinimize2, FiMaximize2, FiMenu, FiVolume2, FiCopy, FiRefreshCw } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export const ChatInterface = () => {
@@ -22,6 +23,8 @@ export const ChatInterface = () => {
 	const [isSpeaking, setIsSpeaking] = useState(false);
 	const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+	const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+	const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
 
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const { setCurrentAnimation } = useWaifu();
@@ -41,7 +44,17 @@ export const ChatInterface = () => {
 		try {
 			const data = await chatAPI.getConversation(conversationId);
 			setSessionId(data.conversation._id);
-			setMessages(data.messages);
+			
+			// Map backend messages to frontend format (extract audioUrl from metadata)
+			const mappedMessages = data.messages.map((msg: BackendMessage): Message => ({
+				_id: msg._id,
+				role: msg.role,
+				content: msg.content,
+				timestamp: new Date(msg.createdAt || msg.timestamp || Date.now()),
+				audioUrl: msg.metadata?.audioUrl || null,
+			}));
+			
+			setMessages(mappedMessages);
 		} catch (error) {
 			console.error('Failed to load conversation:', error);
 			toast.error('Failed to load conversation');
@@ -58,7 +71,7 @@ export const ChatInterface = () => {
 		toast.success('New conversation started');
 	};
 
-	const playAudioFromUrl = async (audioUrl: string, emotion: string) => {
+	const playAudioFromUrl = async (audioUrl: string, emotion: string = 'Talking') => {
 		// Stop current audio if playing
 		if (currentAudio) {
 			currentAudio.pause();
@@ -66,8 +79,11 @@ export const ChatInterface = () => {
 		}
 
 		try {
-			const audio = new Audio(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${audioUrl}`);
+			const fullUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${audioUrl}`;
+			const audio = new Audio(fullUrl);
 			setCurrentAudio(audio);
+			setCurrentAudioUrl(audioUrl);
+			setShowAudioPlayer(true);
 
 			// Set animation to Talking
 			setCurrentAnimation('Talking');
@@ -77,7 +93,6 @@ export const ChatInterface = () => {
 				const validEmotions = ['Idle', 'Angry', 'Shy', 'Greeting', 'Talking'];
 				const nextAnimation = validEmotions.includes(emotion) ? emotion : 'Idle';
 				setCurrentAnimation(nextAnimation as 'Idle' | 'Angry' | 'Shy' | 'Greeting' | 'Talking');
-				setCurrentAudio(null);
 				setIsSpeaking(false);
 			};
 
@@ -86,6 +101,7 @@ export const ChatInterface = () => {
 				setCurrentAnimation('Idle');
 				setCurrentAudio(null);
 				setIsSpeaking(false);
+				setShowAudioPlayer(false);
 			};
 
 			await audio.play();
@@ -93,7 +109,39 @@ export const ChatInterface = () => {
 			console.error('Audio playback failed:', error);
 			setCurrentAnimation('Idle');
 			setIsSpeaking(false);
+			setShowAudioPlayer(false);
 		}
+	};
+
+	const handleAudioPlayPause = () => {
+		if (!currentAudio) return;
+		
+		if (isSpeaking) {
+			currentAudio.pause();
+			setIsSpeaking(false);
+			setCurrentAnimation('Idle');
+		} else {
+			currentAudio.play();
+			setIsSpeaking(true);
+			setCurrentAnimation('Talking');
+		}
+	};
+
+	const handleAudioClose = () => {
+		if (currentAudio) {
+			currentAudio.pause();
+			currentAudio.currentTime = 0;
+		}
+		setShowAudioPlayer(false);
+		setCurrentAudioUrl(null);
+		setCurrentAudio(null);
+		setIsSpeaking(false);
+		setCurrentAnimation('Idle');
+	};
+
+	const handleAudioEnded = () => {
+		setIsSpeaking(false);
+		setCurrentAnimation('Idle');
 	};
 
 	const playAudio = async (text: string, voiceId: string, emotion: string) => {
@@ -109,6 +157,8 @@ export const ChatInterface = () => {
 			// Generate audio using Speechify
 			const audio = await SpeechifyService.generateAudio(text, voiceId);
 			setCurrentAudio(audio);
+			setShowAudioPlayer(true);
+			setCurrentAudioUrl('/generated'); // Placeholder since we're generating on-the-fly
 
 			// Set animation to Talking
 			setCurrentAnimation('Talking');
@@ -119,7 +169,6 @@ export const ChatInterface = () => {
 				const validEmotions = ['Idle', 'Angry', 'Shy', 'Greeting', 'Talking'];
 				const nextAnimation = validEmotions.includes(emotion) ? emotion : 'Idle';
 				setCurrentAnimation(nextAnimation as 'Idle' | 'Angry' | 'Shy' | 'Greeting' | 'Talking');
-				setCurrentAudio(null);
 				setIsSpeaking(false);
 			};
 
@@ -128,6 +177,7 @@ export const ChatInterface = () => {
 				setCurrentAnimation('Idle');
 				setCurrentAudio(null);
 				setIsSpeaking(false);
+				setShowAudioPlayer(false);
 			};
 
 			await audio.play();
@@ -148,7 +198,13 @@ export const ChatInterface = () => {
 			console.error('Audio playback failed:', error);
 			setCurrentAnimation('Idle');
 			setIsSpeaking(false);
+			setShowAudioPlayer(false);
 		}
+	};
+
+	const copyToClipboard = (text: string) => {
+		navigator.clipboard.writeText(text);
+		toast.success('Copied to clipboard!');
 	};
 
 	const sendMessage = async () => {
@@ -229,6 +285,16 @@ export const ChatInterface = () => {
 	if (isMinimized) {
 		return (
 			<>
+				{showAudioPlayer && (
+					<AudioPlayer
+						audioUrl={currentAudioUrl}
+						isPlaying={isSpeaking}
+						onPlayPause={handleAudioPlayPause}
+						onClose={handleAudioClose}
+						onEnded={handleAudioEnded}
+						audioElement={currentAudio}
+					/>
+				)}
 				{isAuthenticated && (
 					<ConversationSidebar
 						currentConversationId={sessionId}
@@ -251,6 +317,16 @@ export const ChatInterface = () => {
 
 	return (
 		<>
+			{showAudioPlayer && (
+				<AudioPlayer
+					audioUrl={currentAudioUrl}
+					isPlaying={isSpeaking}
+					onPlayPause={handleAudioPlayPause}
+					onClose={handleAudioClose}
+					onEnded={handleAudioEnded}
+					audioElement={currentAudio}
+				/>
+			)}
 			{isAuthenticated && (
 				<ConversationSidebar
 					currentConversationId={sessionId}
@@ -322,30 +398,51 @@ export const ChatInterface = () => {
 									}`}
 							>
 								<p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-								<div className="flex items-center justify-between gap-2 mt-1">
-									{msg.timestamp && (
-										<p className="text-xs opacity-60">
-											{(() => {
-												const date = new Date(msg.timestamp);
-												return isNaN(date.getTime()) 
-													? 'Just now'
-													: date.toLocaleTimeString([], {
-														hour: '2-digit',
-														minute: '2-digit'
-													});
-											})()}
-										</p>
-									)}
-									{msg.role === 'assistant' && msg.audioUrl && (
+								
+								{/* Timestamp */}
+								{msg.timestamp && (
+									<p className="text-xs opacity-60 mt-2">
+										{(() => {
+											const date = new Date(msg.timestamp);
+											return isNaN(date.getTime()) 
+												? 'Just now'
+												: date.toLocaleTimeString([], {
+													hour: '2-digit',
+													minute: '2-digit'
+												});
+										})()}
+									</p>
+								)}
+
+								{/* Action Buttons - Show for assistant messages */}
+								{msg.role === 'assistant' && (
+									<div className="flex items-center gap-1 mt-2">
 										<button
-											onClick={() => playAudioFromUrl(msg.audioUrl!, 'Talking')}
-											className="opacity-0 group-hover:opacity-100 p-1 hover:bg-purple-500/20 rounded transition-all text-purple-300 hover:text-white"
-											title="Replay audio"
+											onClick={() => playAudio(msg.content, 'kristy', 'Talking')}
+											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white"
+											title="Listen to audio"
 										>
-											<FiVolume2 size={14} />
+											<FiVolume2 size={12} />
 										</button>
-									)}
-								</div>
+										<button
+											onClick={() => copyToClipboard(msg.content)}
+											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white"
+											title="Copy message"
+										>
+											<FiCopy size={12} />
+										</button>
+										<button
+											onClick={() => {
+												setInputMessage(messages[idx - 1]?.content || '');
+												toast.info('Regenerating response...');
+											}}
+											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white"
+											title="Regenerate response"
+										>
+											<FiRefreshCw size={12} />
+										</button>
+									</div>
+								)}
 							</div>
 						</div>
 					))}

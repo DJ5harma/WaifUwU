@@ -113,27 +113,9 @@ router.post('/message', optionalAuth, async (req, res) => {
 		});
 		await assistantMessage.save();
 
-		// Generate and store audio
-		let audioUrl = null;
-		try {
-			const voiceId = conversation.settings.voice || 'kristy';
-			
-			// Check if audio already exists
-			audioUrl = audioStorageService.getAudioUrl(assistantMessage._id.toString(), voiceId);
-			
-			if (!audioUrl) {
-				// Generate new audio
-				const audioBuffer = await speechifyService.generateAudioBuffer(aiResponse, voiceId);
-				audioUrl = await audioStorageService.saveAudio(audioBuffer, assistantMessage._id.toString(), voiceId);
-				
-				// Update message with audio URL
-				assistantMessage.metadata.audioUrl = audioUrl;
-				await assistantMessage.save();
-			}
-		} catch (audioError) {
-			console.error('Audio generation failed:', audioError);
-			// Continue without audio - not critical
-		}
+		// Audio will be generated and cached on frontend
+		// Backend just provides the message ID for audio caching
+		const audioUrl = null;
 
 		// Update conversation stats
 		const responseTime = Date.now() - startTime;
