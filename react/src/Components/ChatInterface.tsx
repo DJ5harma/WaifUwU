@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import { ConversationSidebar } from './ConversationSidebar';
 import { AudioPlayer } from './AudioPlayer';
 import { AuthModal } from './AuthModal';
-import { FiSend, FiMinimize2, FiMaximize2, FiMenu, FiVolume2, FiCopy, FiRefreshCw } from 'react-icons/fi';
+import { FiSend, FiMinimize2, FiMaximize2, FiMenu, FiVolume2, FiCopy, FiRefreshCw, FiMusic } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 export const ChatInterface = () => {
@@ -26,8 +26,21 @@ export const ChatInterface = () => {
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 	const [showAudioPlayer, setShowAudioPlayer] = useState(false);
 	const [currentAudioUrl, setCurrentAudioUrl] = useState<string | null>(null);
+	const [selectedVoice, setSelectedVoice] = useState('kristy');
+	const [showVoiceMenu, setShowVoiceMenu] = useState(false);
+
+	const availableVoices = [
+		{ id: 'kristy', name: 'Kristy', emoji: '👩' },
+		{ id: 'lisa', name: 'Lisa', emoji: '👱‍♀️' },
+		{ id: 'emily', name: 'Emily', emoji: '👩‍🦰' },
+		{ id: 'erin', name: 'Erin', emoji: '👩‍🦱' },
+		{ id: 'lindsey', name: 'Lindsey', emoji: '👸' },
+		{ id: 'monica', name: 'Monica', emoji: '💁‍♀️' },
+		{ id: 'stacy', name: 'Stacy', emoji: '🧚‍♀️' },
+	];
 
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const voiceMenuRef = useRef<HTMLDivElement>(null);
 	const { setCurrentAnimation } = useWaifu();
 	const { isAuthenticated } = useAuth();
 
@@ -35,6 +48,23 @@ export const ChatInterface = () => {
 	useEffect(() => {
 		SpeechifyService.init();
 	}, []);
+
+	// Close voice menu when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (voiceMenuRef.current && !voiceMenuRef.current.contains(event.target as Node)) {
+				setShowVoiceMenu(false);
+			}
+		};
+
+		if (showVoiceMenu) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [showVoiceMenu]);
 
 	// Auto-load last conversation on mount
 	useEffect(() => {
@@ -265,7 +295,7 @@ export const ChatInterface = () => {
 			if (response.audioUrl) {
 				await playAudioFromUrl(response.audioUrl, response.emotion);
 			} else {
-				await playAudio(response.response, response.voiceId || 'kristy', response.emotion);
+				await playAudio(response.response, selectedVoice, response.emotion);
 			}
 
 		} catch (error) {
@@ -348,11 +378,11 @@ export const ChatInterface = () => {
 				/>
 			)}
 			<div
-				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col z-30 border border-purple-500/30"
-				style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.3)' }}
+				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/90 to-purple-900/90 backdrop-blur-2xl rounded-3xl shadow-2xl flex flex-col z-30 border border-purple-500/40 animate-fade-in-up animate-glow-pulse"
+				style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.4), inset 0 0 60px rgba(168, 85, 247, 0.05)' }}
 			>
 				{/* Header */}
-				<div className="flex items-center justify-between p-4 border-b border-purple-500/30">
+				<div className="flex items-center justify-between p-4 border-b border-purple-500/30 bg-gradient-to-r from-purple-500/5 to-pink-500/5">
 					<div className="flex items-center gap-2">
 						{isAuthenticated && (
 							<button
@@ -364,7 +394,7 @@ export const ChatInterface = () => {
 							</button>
 						)}
 						<div>
-							<h2 className="text-xl font-bold text-white">Chat with Waifu</h2>
+							<h2 className="text-xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-pulse" style={{ backgroundSize: '200% auto' }}>Chat with Waifu</h2>
 							<p className="text-xs text-purple-300">
 								{isSpeaking ? (
 									<span className="flex items-center gap-1">
@@ -377,7 +407,51 @@ export const ChatInterface = () => {
 							</p>
 						</div>
 					</div>
-					<div className="flex gap-2">
+					<div className="flex items-center gap-2">
+						{/* Voice Selector */}
+						<div className="relative" ref={voiceMenuRef}>
+							<button
+								onClick={() => setShowVoiceMenu(!showVoiceMenu)}
+								className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-xl rounded-xl border border-purple-500/40 hover:border-purple-400 hover:scale-105 transition-all group"
+								title="Select voice"
+							>
+								<FiMusic size={14} className="text-purple-300 group-hover:text-purple-200" />
+								<span className="text-xs font-medium text-purple-200 group-hover:text-white">
+									{availableVoices.find(v => v.id === selectedVoice)?.emoji} {availableVoices.find(v => v.id === selectedVoice)?.name}
+								</span>
+							</button>
+							
+							{/* Voice Menu Popup */}
+							{showVoiceMenu && (
+								<div className="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-slate-900/98 to-purple-900/98 backdrop-blur-2xl rounded-2xl border border-purple-500/40 shadow-2xl overflow-hidden z-50 animate-fade-in-up"
+									style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.4)' }}
+								>
+									<div className="p-2 space-y-1">
+										{availableVoices.map(voice => (
+											<button
+												key={voice.id}
+												onClick={() => {
+													setSelectedVoice(voice.id);
+													setShowVoiceMenu(false);
+													toast.success(`Voice changed to ${voice.name} ${voice.emoji}`);
+												}}
+												className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+													selectedVoice === voice.id
+														? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+														: 'text-purple-200 hover:bg-purple-500/20 hover:text-white'
+												}`}
+											>
+												<span className="text-lg">{voice.emoji}</span>
+												<span className="text-sm font-medium">{voice.name}</span>
+												{selectedVoice === voice.id && (
+													<span className="ml-auto text-xs">✓</span>
+												)}
+											</button>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
 						<button
 							onClick={() => setIsMinimized(true)}
 							className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300 hover:text-white"
@@ -393,12 +467,12 @@ export const ChatInterface = () => {
 					{messages.map((msg, idx) => (
 						<div
 							key={idx}
-							className={`group flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+							className={`group flex ${msg.role === 'user' ? 'justify-end animate-slide-in-right' : 'justify-start animate-slide-in-left'}`}
 						>
 							<div
-								className={`max-w-[80%] p-3 rounded-2xl relative ${msg.role === 'user'
-									? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-									: 'bg-slate-800/80 text-purple-100 border border-purple-500/30'
+								className={`max-w-[80%] p-3 rounded-2xl relative transition-all hover:scale-[1.02] ${msg.role === 'user'
+									? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+									: 'bg-slate-800/80 text-purple-100 border border-purple-500/30 shadow-lg shadow-purple-500/20'
 									}`}
 							>
 								<p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
@@ -422,7 +496,7 @@ export const ChatInterface = () => {
 								{msg.role === 'assistant' && (
 									<div className="flex items-center gap-1 mt-2">
 										<button
-											onClick={() => playAudio(msg.content, 'kristy', 'Talking')}
+											onClick={() => playAudio(msg.content, selectedVoice, 'Talking')}
 											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white"
 											title="Listen to audio"
 										>
@@ -465,7 +539,7 @@ export const ChatInterface = () => {
 				</div>
 
 				{/* Input */}
-				<div className="p-4 border-t border-purple-500/30">
+				<div className="p-4 border-t border-purple-500/30 bg-gradient-to-r from-purple-500/5 to-pink-500/5">
 					<div className="flex gap-2">
 						<input
 							type="text"
@@ -474,7 +548,7 @@ export const ChatInterface = () => {
 							onKeyPress={handleKeyPress}
 							placeholder="Type your message..."
 							disabled={isLoading}
-							className="flex-1 bg-slate-800/80 text-white placeholder-purple-300/50 px-4 py-3 rounded-xl border border-purple-500/30 focus:outline-none focus:border-purple-500 transition-colors"
+							className="flex-1 bg-slate-800/50 backdrop-blur-xl text-white placeholder-purple-300/50 px-4 py-3 rounded-xl border border-purple-500/30 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all shadow-inner"
 						/>
 						<button
 							onClick={sendMessage}

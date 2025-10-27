@@ -26,3 +26,107 @@ canvas {
 			rgb(153, 7, 27),
 			rgb(255, 16, 16));
 }
+
+/* Custom Animations */
+@keyframes gradient-shift {
+	0%, 100% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+	0%, 100% { transform: translateY(0) translateX(0); }
+	33% { transform: translateY(-20px) translateX(10px); }
+	66% { transform: translateY(10px) translateX(-10px); }
+}
+
+@keyframes float-slow {
+	0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+	50% { transform: translateY(-30px) translateX(20px) scale(1.1); }
+}
+
+@keyframes float-slower {
+	0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+	50% { transform: translateY(20px) translateX(-30px) rotate(5deg); }
+}
+
+@keyframes particle {
+	0% { transform: translateY(0) translateX(0); opacity: 0; }
+	10% { opacity: 1; }
+	90% { opacity: 1; }
+	100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+}
+
+@keyframes pulse-slow {
+	0%, 100% { opacity: 0.5; }
+	50% { opacity: 0.8; }
+}
+
+@keyframes shimmer {
+	0% { background-position: -1000px 0; }
+	100% { background-position: 1000px 0; }
+}
+
+@keyframes slide-in-right {
+	from { transform: translateX(100%); opacity: 0; }
+	to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+	from { transform: translateX(-100%); opacity: 0; }
+	to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fade-in-up {
+	from { transform: translateY(20px); opacity: 0; }
+	to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes glow-pulse {
+	0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+	50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.6), 0 0 60px rgba(236, 72, 153, 0.3); }
+}
+
+.animate-gradient-shift {
+	background-size: 200% 200%;
+	animation: gradient-shift 15s ease infinite;
+}
+
+.animate-float {
+	animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-slow {
+	animation: float-slow 12s ease-in-out infinite;
+}
+
+.animate-float-slower {
+	animation: float-slower 15s ease-in-out infinite;
+}
+
+.animate-particle {
+	animation: particle linear infinite;
+}
+
+.animate-pulse-slow {
+	animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+	animation: shimmer 2s linear infinite;
+}
+
+.animate-slide-in-right {
+	animation: slide-in-right 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+	animation: slide-in-left 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+	animation: fade-in-up 0.4s ease-out;
+}
+
+.animate-glow-pulse {
+	animation: glow-pulse 2s ease-in-out infinite;
+}

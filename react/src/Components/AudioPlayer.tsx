@@ -97,9 +97,9 @@ export const AudioPlayer = ({
 	const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
 	return (
-		<div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[500px] max-w-[90vw]">
-			<div className="bg-gradient-to-br from-slate-900/98 to-purple-900/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/30 p-4"
-				style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.4)' }}
+		<div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[500px] max-w-[90vw] animate-fade-in-up">
+			<div className="bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-purple-500/40 p-4 animate-glow-pulse"
+				style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.5), inset 0 0 60px rgba(168, 85, 247, 0.1)' }}
 			>
 				<div className="flex items-center gap-3">
 					{/* Play/Pause Button */}

@@ -35,9 +35,9 @@ export const AuthModal = ({ onClose }: AuthModalProps) => {
 
 
 	return (
-		<div className="fixed left-8 top-1/2 -translate-y-1/2 z-50 w-full max-w-md">
-			<div className="bg-gradient-to-br from-slate-900/98 to-purple-900/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/30 relative"
-				style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.4)' }}
+		<div className="fixed left-8 top-1/2 -translate-y-1/2 z-50 w-full max-w-md animate-slide-in-left">
+			<div className="bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-purple-500/40 relative animate-glow-pulse"
+				style={{ boxShadow: '0 0 80px rgba(168, 85, 247, 0.5), inset 0 0 80px rgba(168, 85, 247, 0.1)' }}
 			>
 
 				{/* Header */}

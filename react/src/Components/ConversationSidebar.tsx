@@ -104,8 +104,8 @@ export const ConversationSidebar = ({
 
 	return (
 		<div
-			className="fixed left-0 top-0 bottom-0 w-80 bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-xl border-r border-purple-500/30 flex flex-col z-30"
-			style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.2)' }}
+			className="fixed left-0 top-0 bottom-0 w-80 bg-gradient-to-br from-slate-900/90 to-purple-900/90 backdrop-blur-2xl border-r border-purple-500/40 flex flex-col z-30 animate-slide-in-left"
+			style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.3), inset 0 0 60px rgba(168, 85, 247, 0.05)' }}
 		>
 			{/* Header */}
 			<div className="p-4 border-b border-purple-500/30">
