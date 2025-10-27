@@ -5,6 +5,7 @@ import { useWaifu } from '../Providers/WaifuProvider';
 import { useAuth } from '../hooks/useAuth';
 import { ConversationSidebar } from './ConversationSidebar';
 import { AudioPlayer } from './AudioPlayer';
+import { AuthModal } from './AuthModal';
 import { FiSend, FiMinimize2, FiMaximize2, FiMenu, FiVolume2, FiCopy, FiRefreshCw } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
@@ -318,6 +319,15 @@ export const ChatInterface = () => {
 
 	return (
 		<>
+			{/* Auth Modal - Shows on left side when not logged in */}
+			{!isAuthenticated && (
+				<>
+					{/* Transparent overlay to block interaction but show preview */}
+					<div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40" />
+					<AuthModal onClose={() => {}} />
+				</>
+			)}
+
 			{showAudioPlayer && (
 				<AudioPlayer
 					audioUrl={currentAudioUrl}
@@ -338,7 +348,7 @@ export const ChatInterface = () => {
 				/>
 			)}
 			<div
-				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col z-40 border border-purple-500/30"
+				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col z-30 border border-purple-500/30"
 				style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.3)' }}
 			>
 				{/* Header */}

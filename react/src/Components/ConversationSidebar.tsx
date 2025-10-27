@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { chatAPI, ConversationsResponse } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
-import { FiMessageSquare, FiPlus, FiTrash2, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiMessageSquare, FiPlus, FiTrash2, FiChevronLeft, FiChevronRight, FiUser, FiLogOut } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 interface ConversationSidebarProps {
@@ -19,7 +19,7 @@ export const ConversationSidebar = ({
 	isCollapsed,
 	onToggleCollapse,
 }: ConversationSidebarProps) => {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, user, logout } = useAuth();
 	const [conversations, setConversations] = useState<ConversationsResponse['conversations']>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -104,32 +104,15 @@ export const ConversationSidebar = ({
 
 	return (
 		<div
-			className="fixed left-0 top-0 bottom-0 w-80 bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-xl border-r border-purple-500/30 flex flex-col z-40"
+			className="fixed left-0 top-0 bottom-0 w-80 bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-xl border-r border-purple-500/30 flex flex-col z-30"
 			style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.2)' }}
 		>
 			{/* Header */}
-			<div className="p-4 border-b border-purple-500/30 flex items-center justify-between">
+			<div className="p-4 border-b border-purple-500/30">
 				<h2 className="text-lg font-bold text-white flex items-center gap-2">
 					<FiMessageSquare size={20} />
 					Conversations
 				</h2>
-				<button
-					onClick={onToggleCollapse}
-					className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300"
-				>
-					<FiChevronLeft size={20} />
-				</button>
-			</div>
-
-			{/* New Conversation Button */}
-			<div className="p-4 border-b border-purple-500/30">
-				<button
-					onClick={onNewConversation}
-					className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:scale-105 transition-transform flex items-center justify-center gap-2"
-				>
-					<FiPlus size={20} />
-					New Conversation
-				</button>
 			</div>
 
 			{/* Conversation List */}
@@ -178,11 +161,49 @@ export const ConversationSidebar = ({
 				)}
 			</div>
 
-			{/* Footer */}
+			{/* New Conversation Button */}
 			<div className="p-4 border-t border-purple-500/30">
-				<p className="text-purple-300/50 text-xs text-center">
-					{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}
-				</p>
+				<button
+					onClick={onNewConversation}
+					className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:scale-105 transition-transform flex items-center justify-center gap-2"
+				>
+					<FiPlus size={20} />
+					New Chat
+				</button>
+			</div>
+
+			{/* User Profile Section */}
+			<div className="p-3 border-t border-purple-500/30">
+				<div className="flex items-center gap-3 p-2 rounded-lg hover:bg-purple-500/10 transition-colors">
+					<div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center flex-shrink-0">
+						<FiUser size={20} className="text-white" />
+					</div>
+					<div className="flex-1 min-w-0">
+						<p className="text-white text-sm font-medium truncate">
+							{user?.displayName || user?.username || 'User'}
+						</p>
+						<p className="text-purple-300/70 text-xs truncate">
+							{user?.email || 'Guest'}
+						</p>
+					</div>
+					<button
+						onClick={() => {
+							logout();
+							toast.success('Logged out successfully');
+						}}
+						className="p-2 hover:bg-red-500/20 rounded-lg transition-colors text-purple-300 hover:text-red-400"
+						title="Logout"
+					>
+						<FiLogOut size={18} />
+					</button>
+				</div>
+				<button
+					onClick={onToggleCollapse}
+					className="w-full mt-2 p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300/70 hover:text-white flex items-center justify-center gap-2 text-xs"
+				>
+					<FiChevronLeft size={14} />
+					<span>Hide sidebar</span>
+				</button>
 			</div>
 		</div>
 	);

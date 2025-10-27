@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { FiX, FiUser, FiMail, FiLock } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock } from 'react-icons/fi';
 
 interface AuthModalProps {
 	onClose: () => void;
@@ -13,7 +13,7 @@ export const AuthModal = ({ onClose }: AuthModalProps) => {
 	const [password, setPassword] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 
-	const { login, register, loginAsGuest } = useAuth();
+	const { login, register } = useAuth();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -33,28 +33,12 @@ export const AuthModal = ({ onClose }: AuthModalProps) => {
 		}
 	};
 
-	const handleGuestLogin = async () => {
-		setIsLoading(true);
-		try {
-			await loginAsGuest();
-			onClose();
-		} catch {
-			// Error is handled in AuthProvider
-		} finally {
-			setIsLoading(false);
-		}
-	};
 
 	return (
-		<div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-			<div className="bg-gradient-to-br from-slate-900 to-purple-900 rounded-2xl shadow-2xl w-full max-w-md border border-purple-500/30 relative">
-				{/* Close button */}
-				<button
-					onClick={onClose}
-					className="absolute top-4 right-4 text-purple-300 hover:text-white transition-colors"
-				>
-					<FiX size={24} />
-				</button>
+		<div className="fixed left-8 top-1/2 -translate-y-1/2 z-50 w-full max-w-md">
+			<div className="bg-gradient-to-br from-slate-900/98 to-purple-900/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/30 relative"
+				style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.4)' }}
+			>
 
 				{/* Header */}
 				<div className="p-6 border-b border-purple-500/30">
@@ -133,15 +117,7 @@ export const AuthModal = ({ onClose }: AuthModalProps) => {
 				</form>
 
 				{/* Footer */}
-				<div className="p-6 border-t border-purple-500/30 space-y-3">
-					<button
-						onClick={handleGuestLogin}
-						disabled={isLoading}
-						className="w-full bg-slate-800/80 text-purple-200 py-3 rounded-xl font-medium hover:bg-slate-700/80 disabled:opacity-50 transition-colors border border-purple-500/30"
-					>
-						Continue as Guest
-					</button>
-
+				<div className="p-6 border-t border-purple-500/30">
 					<p className="text-center text-purple-300 text-sm">
 						{mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
 						<button
