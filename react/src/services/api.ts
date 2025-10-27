@@ -10,6 +10,15 @@ const api = axios.create({
 	withCredentials: true,
 });
 
+// Add auth token to requests
+api.interceptors.request.use((config) => {
+	const token = localStorage.getItem('authToken');
+	if (token) {
+		config.headers.Authorization = `Bearer ${token}`;
+	}
+	return config;
+});
+
 export interface Message {
 	_id?: string;
 	role: 'user' | 'assistant' | 'system';
@@ -43,6 +52,67 @@ export interface NewConversationResponse {
 	message: Message;
 }
 
+export interface User {
+	_id: string;
+	username: string;
+	email: string;
+	displayName?: string;
+	avatar?: string;
+	subscription: {
+		tier: 'free' | 'premium' | 'pro';
+		features: {
+			maxConversationsPerDay: number;
+			maxMessagesPerConversation: number;
+		};
+	};
+	preferences?: {
+		defaultPersonality?: string;
+		defaultVoice?: string;
+		theme?: string;
+	};
+	createdAt: Date;
+	lastActive: Date;
+}
+
+export interface AuthResponse {
+	token: string;
+	user: User;
+	isGuest?: boolean;
+}
+
+export interface UserResponse {
+	user: User;
+}
+
+export interface ConversationsResponse {
+	conversations: Array<{
+		_id: string;
+		personality: string;
+		lastMessage?: string;
+		updatedAt: Date;
+		createdAt: Date;
+	}>;
+	total: number;
+	page: number;
+	limit: number;
+}
+
+export interface ConversationDetailResponse {
+	conversation: {
+		_id: string;
+		personality: string;
+		createdAt: Date;
+	};
+	messages: Message[];
+}
+
+export interface Voice {
+	id: string;
+	name: string;
+	language: string;
+	gender?: string;
+}
+
 export const chatAPI = {
 	/**
 	 * Send a message to the AI
@@ -58,7 +128,7 @@ export const chatAPI = {
 	/**
 	 * Get all conversations
 	 */
-	async getConversations(page = 1, limit = 20): Promise<unknown> {
+	async getConversations(page = 1, limit = 20): Promise<ConversationsResponse> {
 		const response = await api.get('/api/chat/conversations', {
 			params: { page, limit },
 		});
@@ -68,7 +138,7 @@ export const chatAPI = {
 	/**
 	 * Get single conversation with messages
 	 */
-	async getConversation(conversationId: string): Promise<unknown> {
+	async getConversation(conversationId: string): Promise<ConversationDetailResponse> {
 		const response = await api.get(`/api/chat/conversations/${conversationId}`);
 		return response.data;
 	},
@@ -91,7 +161,10 @@ export const chatAPI = {
 	/**
 	 * Update conversation
 	 */
-	async updateConversation(conversationId: string, data: unknown): Promise<unknown> {
+	async updateConversation(
+		conversationId: string,
+		data: { personality?: string }
+	): Promise<ConversationDetailResponse> {
 		const response = await api.put(`/api/chat/conversations/${conversationId}`, data);
 		return response.data;
 	},
@@ -107,7 +180,7 @@ export const chatAPI = {
 	/**
 	 * Get available voices
 	 */
-	async getVoices(): Promise<unknown[]> {
+	async getVoices(): Promise<Voice[]> {
 		const response = await api.get('/api/chat/voices');
 		return response.data.voices;
 	},
@@ -125,7 +198,7 @@ export const authAPI = {
 	/**
 	 * Register new user
 	 */
-	async register(username: string, email: string, password: string): Promise<unknown> {
+	async register(username: string, email: string, password: string): Promise<AuthResponse> {
 		const response = await api.post('/api/auth/register', {
 			username,
 			email,
@@ -137,7 +210,7 @@ export const authAPI = {
 	/**
 	 * Login user
 	 */
-	async login(email: string, password: string): Promise<unknown> {
+	async login(email: string, password: string): Promise<AuthResponse> {
 		const response = await api.post('/api/auth/login', {
 			email,
 			password,
@@ -148,7 +221,7 @@ export const authAPI = {
 	/**
 	 * Create guest session
 	 */
-	async createGuest(): Promise<unknown> {
+	async createGuest(): Promise<AuthResponse> {
 		const response = await api.post('/api/auth/guest');
 		return response.data;
 	},
@@ -156,7 +229,7 @@ export const authAPI = {
 	/**
 	 * Get current user
 	 */
-	async getMe(): Promise<unknown> {
+	async getMe(): Promise<UserResponse> {
 		const response = await api.get('/api/auth/me');
 		return response.data;
 	},
@@ -164,7 +237,7 @@ export const authAPI = {
 	/**
 	 * Update profile
 	 */
-	async updateProfile(data: unknown): Promise<unknown> {
+	async updateProfile(data: Partial<Pick<User, 'displayName' | 'avatar' | 'preferences'>>): Promise<UserResponse> {
 		const response = await api.put('/api/auth/profile', data);
 		return response.data;
 	},

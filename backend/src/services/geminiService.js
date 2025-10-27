@@ -1,7 +1,27 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { env } from '../config/env.js';
 
 const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+
+// Response schema for structured output
+const responseSchema = {
+	description: 'AI-generated text with an associated emotion',
+	type: SchemaType.OBJECT,
+	properties: {
+		text: {
+			type: SchemaType.STRING,
+			description: 'The AI-generated response',
+			nullable: false,
+		},
+		emotion: {
+			type: SchemaType.STRING,
+			description: 'The emotion associated with the response',
+			enum: ['Idle', 'Angry', 'Shy', 'Greeting', 'Talking'],
+			nullable: false,
+		},
+	},
+	required: ['text', 'emotion'],
+};
 
 // Personality system prompts
 const PERSONALITIES = {
@@ -64,16 +84,21 @@ Important: Keep it playful and helpful, not threatening. Your responses will be 
 export class GeminiService {
 	constructor() {
 		this.genAI = genAI;
+		this.maxConversationWindow = 10; // Keep last 10 messages
 	}
 
 	/**
-	 * Get model with personality
+	 * Get model with personality and structured output
 	 */
 	getModel(personality = 'friendly') {
 		const systemPrompt = PERSONALITIES[personality] || PERSONALITIES.friendly;
 		return this.genAI.getGenerativeModel({ 
-			model: 'gemini-1.5-flash',
-			systemInstruction: systemPrompt
+			model: 'gemini-2.0-flash-exp',
+			systemInstruction: systemPrompt,
+			generationConfig: {
+				responseMimeType: 'application/json',
+				responseSchema: responseSchema,
+			},
 		});
 	}
 
@@ -86,26 +111,35 @@ export class GeminiService {
 	 */
 	async generateResponse(conversationHistory, userMessage, personality = 'friendly') {
 		try {
-			// Build chat history for Gemini
-			const history = conversationHistory.map(msg => ({
-				role: msg.role === 'assistant' ? 'model' : 'user',
-				parts: [{ text: msg.content }]
-			}));
+			// Filter to only user messages (exclude assistant/system messages from history)
+			// Keep last N messages to stay within context window
+			const userMessages = conversationHistory
+				.filter(msg => msg.role === 'user')
+				.slice(-this.maxConversationWindow)
+				.map(msg => `user: ${msg.content}`);
+
+			// Build context string with conversation history
+			let contextString = '';
+			if (userMessages.length > 0) {
+				contextString = `Previous conversation context: [${userMessages.join(', ')}]. `;
+			}
+
+			// Create prompt with context and current message
+			const prompt = `${contextString}Current user message: ${userMessage}`;
 
 			const model = this.getModel(personality);
-			const chat = model.startChat({ history });
-			const result = await chat.sendMessage(userMessage);
+			const result = await model.generateContent(prompt);
 			const responseText = result.response.text();
 
-			// Detect emotion from response for animation
-			const emotion = this.detectEmotion(responseText, personality);
+			// Parse structured JSON response
+			const output = JSON.parse(responseText);
 
 			// Estimate tokens (rough calculation)
-			const tokens = Math.ceil((userMessage.length + responseText.length) / 4);
+			const tokens = Math.ceil((userMessage.length + output.text.length) / 4);
 
 			return {
-				text: responseText,
-				emotion,
+				text: output.text,
+				emotion: output.emotion || 'Idle',
 				tokens
 			};
 		} catch (error) {
@@ -114,58 +148,6 @@ export class GeminiService {
 		}
 	}
 
-	/**
-	 * Detect emotion from text to trigger appropriate animation
-	 * @param {string} text 
-	 * @param {string} personality
-	 * @returns {string} - Animation type
-	 */
-	detectEmotion(text, personality = 'friendly') {
-		const lowerText = text.toLowerCase();
-		
-		// Personality-specific emotion detection
-		if (personality === 'tsundere') {
-			if (lowerText.match(/\b(not like|don't get wrong|whatever|hmph|baka)\b/)) {
-				return 'Angry';
-			}
-			if (lowerText.match(/\b(maybe|suppose|fine|okay)\b/)) {
-				return 'Shy';
-			}
-		}
-		
-		if (personality === 'dandere' || personality === 'shy') {
-			if (lowerText.match(/\b(um|uh|sorry|excuse me)\b/)) {
-				return 'Shy';
-			}
-		}
-		
-		if (personality === 'yandere') {
-			if (lowerText.match(/\b(only|mine|together|forever)\b/)) {
-				return 'Happy';
-			}
-		}
-		
-		// General emotion detection
-		if (lowerText.match(/\b(angry|mad|frustrated|annoyed|upset)\b/)) {
-			return 'Angry';
-		}
-		
-		if (lowerText.match(/\b(shy|blush|embarrass|nervous|awkward)\b/) || 
-		    lowerText.includes('>///<') || lowerText.includes('>.<')) {
-			return 'Shy';
-		}
-		
-		if (lowerText.match(/\b(hello|hi|hey|greetings|welcome)\b/)) {
-			return 'Greeting';
-		}
-		
-		if (lowerText.match(/\b(happy|excited|great|wonderful|amazing)\b/)) {
-			return 'Happy';
-		}
-		
-		// Default to Talking for active conversation
-		return 'Talking';
-	}
 
 	/**
 	 * Generate a streaming response (for future enhancement)
