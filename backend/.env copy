@@ -1,0 +1,10 @@
+MONGO_URI="mongodb://localhost:27017/ai-talking-robot"
+JWT_SECRET="your-secret"
+GEMINI_API_KEY="api-key"
+SPEECHIFY_API_KEY="api-key"
+PORT=4000
+
+
+
+# "@google/generative-ai": "^0.23.0",
+    # "@speechify/api-sdk": "^2.4.1",
