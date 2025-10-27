@@ -23,6 +23,12 @@ export const UserMenu = () => {
 		);
 	}
 
+	const tierLabel = user?.subscription?.tier
+		? user.subscription.tier.toUpperCase()
+		: isGuest
+			? 'GUEST'
+			: 'FREE';
+
 	return (
 		<>
 			<div className="fixed top-6 left-6 z-30">
@@ -49,7 +55,7 @@ export const UserMenu = () => {
 							)}
 							<div className="mt-2">
 								<span className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-2 py-1 rounded">
-									{user?.subscription.tier.toUpperCase()}
+									{tierLabel}
 								</span>
 							</div>
 						</div>
