@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/7608965d-f700-49b8-94ff-6e018d22a374
+
 # 🌸 WaifUwU - AI Waifu Chat Assistant
 
 A stunning, interactive AI chat application featuring a 3D animated waifu character powered by Google Gemini AI and Speechify text-to-speech. Built with modern web technologies and designed to win frontend contests! ✨
