@@ -28,6 +28,7 @@ export interface Message {
 }
 
 export interface ChatResponse {
+	conversationId: string;
 	sessionId: string;
 	response: string;
 	emotion: string;

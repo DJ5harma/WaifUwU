@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
 	preferences: {
 		waifuVoice: {
 			type: String,
-			default: 'mrbeast'
+			default: 'kristy'
 		},
 		waifuPersonality: {
 			type: String,

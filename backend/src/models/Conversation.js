@@ -35,7 +35,7 @@ const conversationSchema = new mongoose.Schema({
 		},
 		voice: {
 			type: String,
-			default: 'mrbeast'
+			default: 'kristy'
 		},
 		temperature: {
 			type: Number,
