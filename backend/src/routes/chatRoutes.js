@@ -56,6 +56,19 @@ router.post('/message', optionalAuth, async (req, res) => {
 		});
 		await userMessage.save();
 
+		// Build conversation history (used for both cached and non-cached paths)
+		const history = await Message.find({ 
+			conversationId: conversation._id 
+		})
+		.sort({ createdAt: 1 })
+		.limit(20)
+		.select('role content');
+
+		const conversationHistory = history.map(msg => ({
+			role: msg.role,
+			content: msg.content
+		}));
+
 		// Check cache
 		const cacheKey = crypto.createHash('md5').update(message.toLowerCase().trim()).digest('hex');
 		const cachedResponse = await cacheService.getCachedResponse(cacheKey);
@@ -66,19 +79,6 @@ router.post('/message', optionalAuth, async (req, res) => {
 			// Use cached response
 			({ text: aiResponse, emotion } = cachedResponse);
 		} else {
-			// Get conversation history
-			const history = await Message.find({ 
-				conversationId: conversation._id 
-			})
-			.sort({ createdAt: 1 })
-			.limit(20)
-			.select('role content');
-
-			const conversationHistory = history.map(msg => ({
-				role: msg.role,
-				content: msg.content
-			}));
-
 			// Generate AI response
 			const geminiResponse = await geminiService.generateResponse(
 				conversationHistory,
