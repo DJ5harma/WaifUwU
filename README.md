@@ -4,178 +4,190 @@ https://github.com/user-attachments/assets/7608965d-f700-49b8-94ff-6e018d22a374
 
 # 🌸 WaifUwU - AI Waifu Chat Assistant
 
-A stunning, interactive AI chat application featuring a 3D animated waifu character powered by Google Gemini AI and Speechify text-to-speech. Built with modern web technologies and designed to win frontend contests! ✨
+An interactive AI chat application featuring a fully animated 3D waifu character powered by Google Gemini AI and Speechify text-to-speech. Built with React Three Fiber, Express.js, and MongoDB for a modern, immersive conversational experience.
 
 ![WaifUwU](https://img.shields.io/badge/Status-Active-success)
-![React](https://img.shields.io/badge/React-18.3-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)
+![React](https://img.shields.io/badge/React-19.0-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-20+-green)
 
-## 🎨 Features
+## ✨ Features
 
-### 🎭 Interactive 3D Character
-- **Live2D Animated Waifu** - Fully animated character with multiple expressions
-- **Emotion-Based Animations** - Character reacts with different animations (Idle, Talking, Shy, Angry, Greeting)
-- **Smooth Transitions** - Seamless animation blending for natural movements
+### 🎭 3D Animated Character
+- **React Three Fiber** - High-performance 3D rendering with Three.js
+- **Ready Player Me Avatar** - Customizable 3D character model
+- **5 Emotion-Based Animations** - Idle, Talking, Shy, Angry, and Greeting animations using FBX files
+- **Smooth Animation Transitions** - Seamless blending between animation states
+- **Interactive Controls** - OrbitControls for camera manipulation
 
-### 💬 Advanced Chat System
-- **AI-Powered Conversations** - Powered by Google Gemini AI for intelligent responses
-- **Real-time Messaging** - Instant message delivery and response
-- **Conversation History** - Save and load previous conversations
-- **Message Actions** - Listen to audio, copy messages, regenerate responses
-- **Auto-load Last Chat** - Automatically loads your most recent conversation
+### 🤖 AI-Powered Conversations
+- **Google Gemini AI** - Advanced language model with structured output
+- **5 Personality Types** - Choose between Friendly, Tsundere, Kuudere, Dandere, or Yandere personalities
+- **Emotion Detection** - AI automatically selects appropriate character animations
+- **Context-Aware Responses** - Maintains conversation history (last 20 messages)
+- **Response Caching** - Redis-based caching for frequently asked questions
 
-### 🎵 Voice & Audio
-- **7 Voice Options** - Choose from Kristy, Lisa, Emily, Erin, Lindsey, Monica, or Stacy
-- **Text-to-Speech** - Powered by Speechify for natural-sounding voices
-- **Floating Audio Player** - Beautiful player with progress bar, seek controls, and volume
-- **On-Demand Audio** - Generate audio for any message with one click
+### 🎵 Text-to-Speech System
+- **Speechify API Integration** - High-quality voice synthesis
+- **Multiple Voice Options** - Select from various voice profiles
+- **Frontend Audio Generation** - Client-side TTS with access tokens
+- **Audio Caching** - Efficient audio storage and retrieval
+- **Custom Audio Player** - Built-in player with playback controls
 
-### 🔐 Authentication & User Management
-- **Secure Login/Register** - JWT-based authentication
-- **User Profiles** - Display name, email, and avatar support
-- **Session Management** - Persistent login across sessions
-- **User Menu** - Quick access to logout and profile info
+### 🔐 User Authentication
+- **JWT-based Authentication** - Secure token-based auth system
+- **User Registration & Login** - Complete auth flow with bcrypt password hashing
+- **Session Persistence** - Maintain login state across sessions
+- **Protected Routes** - Middleware-based route protection
+- **Optional Authentication** - Some features work without login
 
-### 🎨 Stunning UI/UX
-- **Contest-Winning Design** - Modern, beautiful interface designed to impress
-- **Glassmorphism Effects** - Frosted glass aesthetic throughout
-- **Animated Background** - Floating orbs, particles, and gradient shifts
-- **Smooth Animations** - 60fps animations for all interactions
-- **Glow Effects** - Pulsing neon-style glows on key elements
-- **Responsive Design** - Works beautifully on all screen sizes
+### 💬 Conversation Management
+- **Multi-Conversation Support** - Create and manage multiple chat sessions
+- **Conversation Persistence** - MongoDB storage for all conversations
+- **Pagination** - Efficient loading of conversation lists
+- **Pin Conversations** - Pin important chats to the top
+- **Archive Conversations** - Archive old conversations
+- **Auto-Generated Titles** - Conversations titled from first message
+- **Conversation Settings** - Per-conversation personality and voice settings
 
-### 📱 Conversation Management
-- **Sidebar Navigation** - Easy access to all conversations
-- **Smart Titles** - Conversations named after first message
-- **Delete Conversations** - Remove unwanted chats
-- **Conversation Count** - See total number of saved chats
-- **Collapsible Sidebar** - More screen space when needed
+### 🎨 Modern UI/UX
+- **TailwindCSS 4.0** - Modern utility-first styling
+- **Animated Background** - Dynamic gradient background with floating orbs
+- **Glassmorphism Design** - Frosted glass effects throughout
+- **React Toastify** - Beautiful toast notifications
+- **Responsive Layout** - Mobile-friendly design
+- **Sidebar Navigation** - Collapsible conversation sidebar
 
-### ✨ Additional Features
-- **Minimizable Chat** - Reduce chat to floating button
-- **Toast Notifications** - Beautiful feedback for all actions
-- **Loading States** - Animated loading indicators
-- **Error Handling** - Graceful error messages
-- **Keyboard Shortcuts** - Enter to send messages
+### ⚡ Performance Optimizations
+- **Redis Caching** - Response and context caching
+- **Audio Storage Service** - Efficient audio file management
+- **Lazy Loading** - Suspense-based component loading
+- **Optimized Queries** - MongoDB query optimization
+- **Error Handling** - Comprehensive error handling middleware
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18.3** - Modern React with hooks
-- **TypeScript 5.6** - Type-safe development
-- **Vite** - Lightning-fast build tool
-- **TailwindCSS** - Utility-first CSS framework
-- **React Router** - Client-side routing
-- **React Toastify** - Toast notifications
-- **React Icons** - Beautiful icon library
-- **Pixi.js** - 2D rendering for Live2D
-- **Live2D Cubism SDK** - Character animation
+- **React 19.0** - Latest React with concurrent features
+- **TypeScript 5.7** - Type-safe development
+- **Vite 6.2** - Next-generation build tool
+- **React Three Fiber 9.0** - React renderer for Three.js
+- **@react-three/drei 10.0** - Useful helpers for R3F
+- **Three.js 0.174** - 3D graphics library
+- **TailwindCSS 4.0** - Utility-first CSS framework
+- **React Router 7.2** - Client-side routing
+- **React Toastify 11.0** - Toast notifications
+- **React Icons 5.5** - Icon library
+- **Axios 1.8** - HTTP client
+- **Speechify API SDK 2.4** - Text-to-speech integration
 
 ### Backend
-- **Node.js 20+** - JavaScript runtime
-- **Express.js** - Web framework
-- **MongoDB** - NoSQL database
-- **Mongoose** - MongoDB ODM
-- **JWT** - Authentication tokens
-- **bcrypt** - Password hashing
-- **Google Gemini AI** - AI conversation engine
-- **Speechify API** - Text-to-speech generation
+- **Node.js 20+** - JavaScript runtime with ES modules
+- **Express.js 5.1** - Web application framework
+- **MongoDB 8.19** - NoSQL database
+- **Mongoose 8.19** - MongoDB ODM
+- **Redis 5.9** - In-memory caching
+- **JWT 9.0** - JSON Web Tokens
+- **bcrypt 6.0** - Password hashing
+- **Google Generative AI 0.24** - Gemini AI SDK
+- **Speechify API SDK 2.5** - Server-side TTS
+- **CORS 2.8** - Cross-origin resource sharing
+- **dotenv 16.6** - Environment variable management
 
 ## 📦 Installation
 
 ### Prerequisites
-- Node.js 20 or higher
-- MongoDB installed and running
-- Google Gemini API key
-- Speechify API key
+- **Node.js 20+** - [Download](https://nodejs.org/)
+- **MongoDB** - [Download](https://www.mongodb.com/try/download/community) or use MongoDB Atlas
+- **Redis** (Optional) - [Download](https://redis.io/download) for caching
+- **Google Gemini API Key** - [Get API Key](https://makersuite.google.com/app/apikey)
+- **Speechify API Key** - [Get API Key](https://speechify.com/api)
 
-### 1. Clone the Repository
+### Quick Start
+
+#### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/WaifUwU.git
+git clone https://github.com/DJ5harma/WaifUwU.git
 cd WaifUwU
 ```
 
-### 2. Backend Setup
+#### 2. Install All Dependencies
 ```bash
-cd backend
-npm install
+npm run setup
 ```
 
-Create a `.env` file in the `backend` directory:
+#### 3. Configure Backend Environment
+Create `backend/.env`:
 ```env
+# Server Configuration
 PORT=4000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+
+# Database
 MONGODB_URI=mongodb://localhost:27017/waifuwu
-JWT_SECRET=your_super_secret_jwt_key_here
+
+# Redis (Optional - app works without it)
+REDIS_URL=redis://localhost:6379
+
+# Authentication
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+
+# AI Services
 GEMINI_API_KEY=your_gemini_api_key_here
 SPEECHIFY_API_KEY=your_speechify_api_key_here
 ```
 
-Start the backend server:
-```bash
-npm run dev
-```
-
-### 3. Frontend Setup
-```bash
-cd ../react
-npm install
-```
-
-Create a `.env` file in the `react` directory:
+#### 4. Configure Frontend Environment
+Create `react/.env`:
 ```env
 VITE_API_URL=http://localhost:4000
-VITE_SPEECHIFY_API_KEY=your_speechify_api_key_here
 ```
 
-Start the frontend development server:
+#### 5. Start Development Servers
+
+**Terminal 1 - Backend:**
 ```bash
-npm run dev
+npm run dev:backend
 ```
 
-### 4. Access the Application
+**Terminal 2 - Frontend:**
+```bash
+npm run dev:frontend
+```
+
+#### 6. Access the Application
 Open your browser and navigate to:
 ```
 http://localhost:5173
 ```
 
-## 🚀 Usage
+## 🚀 Usage Guide
 
-### First Time Setup
-1. **Register an Account** - Click "Register" on the auth modal
-2. **Login** - Use your credentials to log in
-3. **Start Chatting** - Type a message and press Enter or click Send
-4. **Select Voice** - Click the voice selector to choose your preferred voice
-5. **Enjoy!** - Watch your waifu come to life!
+### Getting Started
+1. **Register** - Create a new account with email and password
+2. **Login** - Sign in to access all features
+3. **Start Chatting** - Type a message and watch your waifu respond!
 
-### Features Guide
+### Conversation Features
+- **New Conversation** - Click "New Chat" to start fresh
+- **Switch Conversations** - Click any conversation in the sidebar
+- **Delete Conversation** - Remove unwanted chats
+- **Pin Conversations** - Keep important chats at the top
+- **Archive Conversations** - Hide old conversations
 
-#### Sending Messages
-- Type your message in the input box
-- Press `Enter` or click the send button
-- The AI will respond with text and audio
+### Personality Selection
+Choose from 5 distinct personalities:
+- **Friendly** - Cheerful, supportive, and warm
+- **Tsundere** - Tough exterior, caring interior
+- **Kuudere** - Calm, composed, and analytical
+- **Dandere** - Shy, gentle, and sweet
+- **Yandere** - Devoted, protective, and possessive
 
-#### Voice Selection
-- Click the voice button in the header (🎵)
-- Choose from 7 different voices
-- Selected voice applies to all new messages
-
-#### Message Actions
-- **🔊 Listen** - Play audio for any message
-- **📋 Copy** - Copy message text to clipboard
-- **🔄 Regenerate** - Get a new response
-
-#### Conversation Management
-- **New Chat** - Click "New Chat" in sidebar
-- **Load Chat** - Click any conversation to load it
-- **Delete Chat** - Hover over conversation and click trash icon
-- **Hide Sidebar** - Click "Hide sidebar" at bottom
-
-#### Audio Player
-- **Play/Pause** - Control audio playback
-- **Seek** - Click progress bar to jump to position
-- **Volume** - Adjust volume with slider
-- **Close** - Close the audio player
+### Voice Customization
+- Access voice settings through the chat interface
+- Select from multiple Speechify voice profiles
+- Voice preference saved per conversation
 
 ## 📁 Project Structure
 
@@ -183,22 +195,62 @@ http://localhost:5173
 WaifUwU/
 ├── backend/
 │   ├── src/
-│   │   ├── models/          # MongoDB models
-│   │   ├── routes/          # API routes
-│   │   ├── services/        # Business logic
-│   │   └── server.js        # Entry point
-│   ├── public/              # Static files
-│   └── package.json
+│   │   ├── config/
+│   │   │   ├── database.js       # MongoDB & Redis connection
+│   │   │   └── env.js            # Environment configuration
+│   │   ├── middleware/
+│   │   │   ├── auth.js           # JWT authentication
+│   │   │   └── errorHandler.js  # Error handling
+│   │   ├── models/
+│   │   │   ├── User.js           # User schema
+│   │   │   ├── Conversation.js   # Conversation schema
+│   │   │   ├── Message.js        # Message schema
+│   │   │   ├── Personality.js    # Personality schema
+│   │   │   └── Analytics.js      # Analytics schema
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js     # Auth endpoints
+│   │   │   └── chatRoutes.js     # Chat endpoints
+│   │   ├── services/
+│   │   │   ├── geminiService.js  # Gemini AI integration
+│   │   │   ├── speechifyService.js # TTS integration
+│   │   │   ├── cacheService.js   # Redis caching
+│   │   │   └── audioStorageService.js # Audio management
+│   │   └── index.js              # Server entry point
+│   ├── public/
+│   │   └── audio/                # Generated audio files
+│   ├── package.json
+│   └── ENV_CONFIG.md             # Environment setup guide
 ├── react/
 │   ├── src/
-│   │   ├── Components/      # React components
-│   │   ├── Providers/       # Context providers
-│   │   ├── hooks/           # Custom hooks
-│   │   ├── services/        # API services
-│   │   ├── App.tsx          # Main app component
-│   │   └── index.css        # Global styles
-│   ├── public/              # Public assets
-│   └── package.json
+│   │   ├── Components/
+│   │   │   ├── AnimatedBackground.tsx
+│   │   │   ├── AudioPlayer.tsx
+│   │   │   ├── AuthModal.tsx
+│   │   │   ├── Avatar.tsx        # 3D character component
+│   │   │   ├── ChatInterface.tsx
+│   │   │   ├── ConversationSidebar.tsx
+│   │   │   ├── Loading.tsx
+│   │   │   └── Waifu.tsx         # 3D scene setup
+│   │   ├── Providers/
+│   │   │   ├── AuthProvider.tsx  # Auth context
+│   │   │   └── WaifuProvider.tsx # Animation state
+│   │   ├── hooks/
+│   │   │   └── useAuth.ts        # Auth hook
+│   │   ├── services/
+│   │   │   ├── api.ts            # API client
+│   │   │   └── speechify.ts      # TTS client
+│   │   ├── App.tsx               # Main app component
+│   │   ├── main.tsx              # React entry point
+│   │   ├── CONFIG.ts             # App configuration
+│   │   └── index.css             # Global styles
+│   ├── public/
+│   │   ├── models/               # 3D character models (.glb)
+│   │   └── animations/           # FBX animation files
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
+├── package.json                  # Root package.json
+├── .gitignore
 └── README.md
 ```
 
@@ -207,76 +259,153 @@ WaifUwU/
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user
+- `GET /api/auth/me` - Get current user info
 
 ### Chat
-- `POST /api/chat` - Send message and get response
-- `GET /api/chat/conversations` - Get all conversations
-- `GET /api/chat/conversation/:id` - Get specific conversation
-- `DELETE /api/chat/conversation/:id` - Delete conversation
+- `POST /api/chat/message` - Send message and get AI response
+- `GET /api/chat/conversations` - Get all user conversations (paginated)
+- `GET /api/chat/conversations/:id` - Get specific conversation with messages
+- `DELETE /api/chat/conversations/:id` - Delete conversation
+- `PUT /api/chat/conversations/:id` - Update conversation (title, settings)
+- `POST /api/chat/conversations/:id/pin` - Toggle pin conversation
+- `POST /api/chat/conversations/:id/archive` - Archive conversation
+- `POST /api/chat/conversations/new` - Create new conversation
+- `GET /api/chat/tts-token` - Get Speechify access token
+- `GET /api/chat/voices` - Get available TTS voices
+
+### Health
+- `GET /health` - Server health check
 
 ## 🎨 Customization
 
-### Changing Waifu Model
-Replace the Live2D model files in `react/public/live2d/` with your own model.
+### Adding Custom 3D Models
+1. Export your Ready Player Me avatar as `.glb`
+2. Place in `react/public/models/`
+3. Update model path in `Avatar.tsx`
 
-### Modifying Animations
-Edit animation states in `react/src/Components/Waifu.tsx`.
+### Adding Custom Animations
+1. Export animations as `.fbx` files
+2. Place in `react/public/animations/`
+3. Import and configure in `Avatar.tsx`
 
-### Styling
-All styles use TailwindCSS. Modify `react/src/index.css` for global styles.
+### Creating Custom Personalities
+Edit `backend/src/services/geminiService.js`:
+```javascript
+const PERSONALITIES = {
+  custom: `Your custom personality prompt here...`
+};
+```
 
-### Adding More Voices
-Add voice options to the `availableVoices` array in `ChatInterface.tsx`.
+### Styling Customization
+- Global styles: `react/src/index.css`
+- Component styles: Inline TailwindCSS classes
+- Theme colors: `react/src/CONFIG.ts`
 
 ## 🐛 Troubleshooting
 
-### MongoDB Connection Issues
-- Ensure MongoDB is running: `mongod`
-- Check connection string in `.env`
+### MongoDB Connection Failed
+```bash
+# Check if MongoDB is running
+mongod --version
 
-### API Key Errors
-- Verify Gemini API key is valid
-- Verify Speechify API key is valid
-- Check `.env` files are properly configured
+# Start MongoDB service
+# Windows: net start MongoDB
+# Mac: brew services start mongodb-community
+# Linux: sudo systemctl start mongod
+```
+
+### Redis Connection Failed
+Redis is optional. The app will continue without it, but caching won't work.
+```bash
+# Start Redis (optional)
+redis-server
+```
+
+### Environment Variables Not Loading
+- Ensure `.env` files exist in both `backend/` and `react/` directories
+- Check for typos in variable names
+- Restart development servers after changing `.env`
+
+### 3D Model Not Loading
+- Verify model file exists in `react/public/models/`
+- Check browser console for loading errors
+- Ensure model path in `Avatar.tsx` is correct
 
 ### Audio Not Playing
+- Verify Speechify API key is valid
 - Check browser console for errors
-- Verify Speechify API key
-- Ensure audio URLs are accessible
+- Ensure browser allows audio playback
 
 ### Build Errors
-- Delete `node_modules` and reinstall: `npm install`
-- Clear build cache: `npm run clean` (if available)
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
 
-## 📝 License
+# Or use the setup script
+npm run setup
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📝 Scripts
+
+### Root Level
+- `npm run setup` - Install all dependencies
+- `npm run dev:backend` - Start backend dev server
+- `npm run dev:frontend` - Start frontend dev server
+- `npm run start:backend` - Start backend production server
+- `npm run build:frontend` - Build frontend for production
+- `npm run preview:frontend` - Preview production build
+
+### Backend
+- `npm start` - Start production server
+- `npm run dev` - Start development server with nodemon
+
+### Frontend
+- `npm run dev` - Start Vite dev server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## 🔒 Security Notes
+
+- Never commit `.env` files to version control
+- Change `JWT_SECRET` in production
+- Use strong passwords for user accounts
+- Keep API keys secure
+- Use HTTPS in production
+- Implement rate limiting for production
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these steps:
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
 ## 👏 Acknowledgments
 
-- **Google Gemini AI** - For powering the intelligent conversations
-- **Speechify** - For natural text-to-speech
-- **Live2D** - For the amazing character animation system
-- **React Community** - For the incredible ecosystem
-- **TailwindCSS** - For making styling a breeze
+- **Google Gemini AI** - Advanced language model
+- **Speechify** - High-quality text-to-speech
+- **Ready Player Me** - 3D avatar creation
+- **Three.js & React Three Fiber** - 3D rendering
+- **MongoDB** - Database solution
+- **Redis** - Caching layer
 
 ## 📧 Contact
+
+**Author:** DJ5harma
 
 For questions or support, please open an issue on GitHub.
 
 ---
 
-Made with 💜 by [Your Name]
+Made with 💜 by DJ5harma
 
 **Star ⭐ this repo if you like it!**
