@@ -1,3 +1,5 @@
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/7b7d357c-48b5-473d-beba-ba1fb3d21fb9" />
+
 https://github.com/user-attachments/assets/7608965d-f700-49b8-94ff-6e018d22a374
 
 # 🌸 WaifUwU - AI Waifu Chat Assistant
