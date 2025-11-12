@@ -2,11 +2,12 @@ import express from 'express';
 import { Conversation } from '../models/Conversation.js';
 import { Message } from '../models/Message.js';
 import { User } from '../models/User.js';
-import { geminiService } from '../services/geminiService.js';
+import { aiService } from '../services/aiService.js';
 import { speechifyService } from '../services/speechifyService.js';
 import { cacheService } from '../services/cacheService.js';
 import { audioStorageService } from '../services/audioStorageService.js';
 import { authenticate, optionalAuth } from '../middleware/auth.js';
+import { validateEmotion } from '../utils/emotionValidator.js';
 import crypto from 'crypto';
 
 const router = express.Router();
@@ -77,19 +78,20 @@ router.post('/message', optionalAuth, async (req, res) => {
 		let aiResponse, emotion, tokens = 0;
 
 		if (cachedResponse && cachedResponse.timestamp > Date.now() - 300000) {
-			// Use cached response
-			({ text: aiResponse, emotion } = cachedResponse);
+			// Use cached response (validate emotion to ensure it matches frontend types)
+			({ text: aiResponse } = cachedResponse);
+			emotion = validateEmotion(cachedResponse.emotion);
 		} else {
-			// Generate AI response
-			const geminiResponse = await geminiService.generateResponse(
+			// Generate AI response (uses configured provider: Gemini or Local AI)
+			const aiResponseData = await aiService.generateResponse(
 				conversationHistory,
 				message,
 				conversation.settings.personality
 			);
 
-			aiResponse = geminiResponse.text;
-			emotion = geminiResponse.emotion;
-			tokens = geminiResponse.tokens || 0;
+			aiResponse = aiResponseData.text;
+			emotion = aiResponseData.emotion;
+			tokens = aiResponseData.tokens || 0;
 
 			// Cache the response
 			await cacheService.cacheResponse(cacheKey, {

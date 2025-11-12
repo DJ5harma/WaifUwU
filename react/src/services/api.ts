@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { WAIFU_ANIMATION_TYPE } from '../Providers/WaifuProvider';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
@@ -35,7 +36,7 @@ export interface BackendMessage {
 	timestamp?: string;
 	metadata?: {
 		audioUrl?: string | null;
-		emotion?: string;
+		emotion?: WAIFU_ANIMATION_TYPE;
 		tokens?: number;
 		cached?: boolean;
 	};
@@ -45,7 +46,7 @@ export interface ChatResponse {
 	conversationId: string;
 	sessionId: string;
 	response: string;
-	emotion: string;
+	emotion: WAIFU_ANIMATION_TYPE;
 	voiceId: string;
 	audioUrl: string | null;
 	duration: number;
