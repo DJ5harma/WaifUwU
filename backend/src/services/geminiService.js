@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { env } from '../config/env.js';
+import { validateEmotion, DEFAULT_EMOTION } from '../utils/emotionValidator.js';
 
 const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
 
@@ -137,9 +138,13 @@ export class GeminiService {
 			// Estimate tokens (rough calculation)
 			const tokens = Math.ceil((userMessage.length + output.text.length) / 4);
 
+			// Validate emotion to ensure it matches frontend types
+			const rawEmotion = output.emotion || DEFAULT_EMOTION;
+			const validatedEmotion = validateEmotion(rawEmotion);
+
 			return {
 				text: output.text,
-				emotion: output.emotion || 'Idle',
+				emotion: validatedEmotion,
 				tokens
 			};
 		} catch (error) {

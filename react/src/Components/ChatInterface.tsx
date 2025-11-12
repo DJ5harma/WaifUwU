@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { chatAPI, Message, ChatResponse, BackendMessage } from '../services/api';
 import { SpeechifyService } from '../services/speechify';
-import { useWaifu } from '../Providers/WaifuProvider';
+import { useWaifu, WAIFU_ANIMATION_TYPE } from '../Providers/WaifuProvider';
 import { useAuth } from '../hooks/useAuth';
 import { ConversationSidebar } from './ConversationSidebar';
 import { AudioPlayer } from './AudioPlayer';
@@ -121,7 +121,7 @@ export const ChatInterface = () => {
 		toast.success('New conversation started');
 	};
 
-	const playAudioFromUrl = async (audioUrl: string, emotion: string = 'Talking') => {
+	const playAudioFromUrl = async (audioUrl: string, emotion: WAIFU_ANIMATION_TYPE = 'Talking') => {
 		// Stop current audio if playing
 		if (currentAudio) {
 			currentAudio.pause();
@@ -194,7 +194,7 @@ export const ChatInterface = () => {
 		setCurrentAnimation('Idle');
 	};
 
-	const playAudio = async (text: string, voiceId: string, emotion: string) => {
+	const playAudio = async (text: string, voiceId: string, emotion: WAIFU_ANIMATION_TYPE) => {
 		if (!text) return;
 
 		// Stop current audio if playing
