@@ -98,14 +98,18 @@ export const AudioPlayer = ({
 
 	return (
 		<div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[500px] max-w-[90vw] animate-fade-in-up">
-			<div className="bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-purple-500/40 p-4 animate-glow-pulse"
-				style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.5), inset 0 0 60px rgba(168, 85, 247, 0.1)' }}
+			<div className="bg-gradient-to-br from-slate-900/50 to-purple-900/50 backdrop-blur-3xl rounded-3xl shadow-2xl border border-purple-500/30 p-4 animate-glow-pulse"
+				style={{ 
+					boxShadow: '0 0 100px rgba(168, 85, 247, 0.4), inset 0 0 100px rgba(168, 85, 247, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+					background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.5) 0%, rgba(88, 28, 135, 0.5) 100%)'
+				}}
 			>
 				<div className="flex items-center gap-3">
 					{/* Play/Pause Button */}
 					<button
 						onClick={onPlayPause}
-						className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center hover:scale-110 transition-transform"
+						className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:scale-110 transition-transform border border-purple-400/30 shadow-lg shadow-purple-500/20"
+						style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
 					>
 						{isPlaying ? <FiPause size={20} className="text-white" /> : <FiPlay size={20} className="text-white ml-0.5" />}
 					</button>
@@ -140,7 +144,7 @@ export const AudioPlayer = ({
 					<div className="flex items-center gap-2 flex-shrink-0">
 						<button
 							onClick={toggleMute}
-							className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300 hover:text-white"
+							className="p-2 hover:bg-purple-500/30 backdrop-blur-sm rounded-lg transition-all text-purple-300 hover:text-white border border-transparent hover:border-purple-500/30"
 						>
 							{isMuted || volume === 0 ? <FiVolumeX size={18} /> : <FiVolume2 size={18} />}
 						</button>
@@ -162,7 +166,7 @@ export const AudioPlayer = ({
 					{/* Close Button */}
 					<button
 						onClick={onClose}
-						className="flex-shrink-0 p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300 hover:text-white"
+						className="flex-shrink-0 p-2 hover:bg-purple-500/30 backdrop-blur-sm rounded-lg transition-all text-purple-300 hover:text-white border border-transparent hover:border-purple-500/30"
 					>
 						<FiX size={18} />
 					</button>

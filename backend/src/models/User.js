@@ -27,32 +27,10 @@ const userSchema = new mongoose.Schema({
 			return this.username;
 		}
 	},
-	avatar: {
-		type: String,
-		default: null
-	},
 	preferences: {
 		waifuVoice: {
 			type: String,
 			default: 'kristy'
-		},
-		waifuPersonality: {
-			type: String,
-			enum: ['friendly', 'tsundere', 'kuudere', 'dandere', 'yandere'],
-			default: 'friendly'
-		},
-		theme: {
-			type: String,
-			enum: ['purple', 'pink', 'blue', 'dark'],
-			default: 'purple'
-		},
-		autoPlayAudio: {
-			type: Boolean,
-			default: true
-		},
-		showAnimations: {
-			type: Boolean,
-			default: true
 		}
 	},
 	stats: {
@@ -64,10 +42,6 @@ const userSchema = new mongoose.Schema({
 			type: Number,
 			default: 0
 		},
-		favoriteTopics: [{
-			topic: String,
-			count: Number
-		}],
 		lastActive: {
 			type: Date,
 			default: Date.now
@@ -113,17 +87,16 @@ userSchema.methods.incrementMessageCount = function() {
 
 // Get public profile
 userSchema.methods.toPublicJSON = function() {
-	return {
-		id: this._id,
-		username: this.username,
-		displayName: this.displayName,
-		avatar: this.avatar,
-		stats: {
-			totalConversations: this.stats.totalConversations,
-			totalMessages: this.stats.totalMessages
-		},
-		createdAt: this.createdAt
-	};
+		return {
+			id: this._id,
+			username: this.username,
+			displayName: this.displayName,
+			stats: {
+				totalConversations: this.stats.totalConversations,
+				totalMessages: this.stats.totalMessages
+			},
+			createdAt: this.createdAt
+		};
 };
 
 export const User = mongoose.model('User', userSchema);

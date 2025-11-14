@@ -94,8 +94,11 @@ export const ConversationSidebar = ({
 		return (
 			<button
 				onClick={onToggleCollapse}
-				className="fixed left-0 top-1/2 -translate-y-1/2 bg-gradient-to-br from-slate-900/95 to-purple-900/95 backdrop-blur-xl p-3 rounded-r-xl border border-l-0 border-purple-500/30 hover:scale-105 transition-transform z-40"
-				style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)' }}
+				className="fixed left-0 top-1/2 -translate-y-1/2 bg-gradient-to-br from-slate-900/50 to-purple-900/50 backdrop-blur-2xl p-3 rounded-r-xl border border-l-0 border-purple-500/30 hover:scale-105 transition-transform z-40"
+				style={{ 
+					boxShadow: '0 0 30px rgba(168, 85, 247, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+					background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.5) 0%, rgba(88, 28, 135, 0.5) 100%)'
+				}}
 			>
 				<FiChevronRight size={20} className="text-purple-300" />
 			</button>
@@ -104,11 +107,14 @@ export const ConversationSidebar = ({
 
 	return (
 		<div
-			className="fixed left-0 top-0 bottom-0 w-80 bg-gradient-to-br from-slate-900/90 to-purple-900/90 backdrop-blur-2xl border-r border-purple-500/40 flex flex-col z-30 animate-slide-in-left"
-			style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.3), inset 0 0 60px rgba(168, 85, 247, 0.05)' }}
+			className="fixed left-0 top-0 bottom-0 w-80 bg-gradient-to-br from-slate-900/40 to-purple-900/40 backdrop-blur-3xl border-r border-purple-500/30 flex flex-col z-30 animate-slide-in-left"
+			style={{ 
+				boxShadow: '0 0 80px rgba(168, 85, 247, 0.25), inset 0 0 100px rgba(168, 85, 247, 0.1), inset 1px 0 0 rgba(255, 255, 255, 0.1)',
+				background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(88, 28, 135, 0.4) 100%)'
+			}}
 		>
 			{/* Header */}
-			<div className="p-4 border-b border-purple-500/30">
+			<div className="p-4 border-b border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
 				<h2 className="text-lg font-bold text-white flex items-center gap-2">
 					<FiMessageSquare size={20} />
 					Conversations
@@ -129,11 +135,12 @@ export const ConversationSidebar = ({
 						<div
 							key={conversation._id}
 							onClick={() => onSelectConversation(conversation._id)}
-							className={`group relative p-3 rounded-xl cursor-pointer transition-all ${
+							className={`group relative p-3 rounded-xl cursor-pointer transition-all backdrop-blur-sm ${
 								currentConversationId === conversation._id
-									? 'bg-purple-500/30 border border-purple-500/50'
-									: 'bg-slate-800/50 border border-purple-500/20 hover:bg-slate-800/80 hover:border-purple-500/40'
+									? 'bg-purple-500/30 border border-purple-500/40 shadow-lg shadow-purple-500/10'
+									: 'bg-slate-800/30 border border-purple-500/15 hover:bg-slate-800/50 hover:border-purple-500/30'
 							}`}
+							style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)' }}
 						>
 							<div className="flex items-start justify-between gap-2">
 								<div className="flex-1 min-w-0">
@@ -162,10 +169,11 @@ export const ConversationSidebar = ({
 			</div>
 
 			{/* New Conversation Button */}
-			<div className="p-4 border-t border-purple-500/30">
+			<div className="p-4 border-t border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
 				<button
 					onClick={onNewConversation}
-					className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:scale-105 transition-transform flex items-center justify-center gap-2"
+					className="w-full bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-sm text-white py-3 rounded-xl font-semibold hover:scale-105 transition-transform flex items-center justify-center gap-2 border border-purple-400/30 shadow-lg shadow-purple-500/20"
+					style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
 				>
 					<FiPlus size={20} />
 					New Chat
@@ -173,8 +181,8 @@ export const ConversationSidebar = ({
 			</div>
 
 			{/* User Profile Section */}
-			<div className="p-3 border-t border-purple-500/30">
-				<div className="flex items-center gap-3 p-2 rounded-lg hover:bg-purple-500/10 transition-colors">
+			<div className="p-3 border-t border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
+				<div className="flex items-center gap-3 p-2 rounded-lg hover:bg-purple-500/20 backdrop-blur-sm transition-all border border-transparent hover:border-purple-500/20">
 					<div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center flex-shrink-0">
 						<FiUser size={20} className="text-white" />
 					</div>
@@ -191,7 +199,7 @@ export const ConversationSidebar = ({
 							logout();
 							toast.success('Logged out successfully');
 						}}
-						className="p-2 hover:bg-red-500/20 rounded-lg transition-colors text-purple-300 hover:text-red-400"
+						className="p-2 hover:bg-red-500/30 backdrop-blur-sm rounded-lg transition-all text-purple-300 hover:text-red-400 border border-transparent hover:border-red-500/30"
 						title="Logout"
 					>
 						<FiLogOut size={18} />
@@ -199,7 +207,7 @@ export const ConversationSidebar = ({
 				</div>
 				<button
 					onClick={onToggleCollapse}
-					className="w-full mt-2 p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300/70 hover:text-white flex items-center justify-center gap-2 text-xs"
+					className="w-full mt-2 p-2 hover:bg-purple-500/30 backdrop-blur-sm rounded-lg transition-all text-purple-300/70 hover:text-white flex items-center justify-center gap-2 text-xs border border-transparent hover:border-purple-500/30"
 				>
 					<FiChevronLeft size={14} />
 					<span>Hide sidebar</span>

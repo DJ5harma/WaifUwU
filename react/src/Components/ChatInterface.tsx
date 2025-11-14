@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { chatAPI, Message, ChatResponse, BackendMessage } from '../services/api';
 import { SpeechifyService } from '../services/speechify';
 import { useWaifu, WAIFU_ANIMATION_TYPE } from '../Providers/WaifuProvider';
@@ -41,6 +42,7 @@ export const ChatInterface = () => {
 
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const voiceMenuRef = useRef<HTMLDivElement>(null);
+	const voiceButtonRef = useRef<HTMLButtonElement>(null);
 	const { setCurrentAnimation } = useWaifu();
 	const { isAuthenticated } = useAuth();
 
@@ -359,8 +361,10 @@ export const ChatInterface = () => {
 				)}
 				<button
 					onClick={() => setIsMinimized(false)}
-					className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-50"
-					style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }}
+					className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-xl text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-50 border border-purple-400/30"
+					style={{ 
+						boxShadow: '0 0 30px rgba(168, 85, 247, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+					}}
 				>
 					<FiMaximize2 size={24} />
 				</button>
@@ -399,16 +403,19 @@ export const ChatInterface = () => {
 				/>
 			)}
 			<div
-				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/90 to-purple-900/90 backdrop-blur-2xl rounded-3xl shadow-2xl flex flex-col z-30 border border-purple-500/40 animate-fade-in-up animate-glow-pulse"
-				style={{ boxShadow: '0 0 60px rgba(168, 85, 247, 0.4), inset 0 0 60px rgba(168, 85, 247, 0.05)' }}
+				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/40 to-purple-900/40 backdrop-blur-3xl rounded-3xl shadow-2xl flex flex-col z-30 border border-purple-500/30 animate-fade-in-up animate-glow-pulse overflow-hidden"
+				style={{ 
+					boxShadow: '0 0 80px rgba(168, 85, 247, 0.3), inset 0 0 100px rgba(168, 85, 247, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+					background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(88, 28, 135, 0.4) 100%)'
+				}}
 			>
 				{/* Header */}
-				<div className="flex items-center justify-between p-4 border-b border-purple-500/30 bg-gradient-to-r from-purple-500/5 to-pink-500/5">
+				<div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm relative z-50">
 					<div className="flex items-center gap-2">
 						{isAuthenticated && (
 							<button
 								onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-								className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300 hover:text-white lg:hidden"
+								className="p-2 hover:bg-purple-500/30 backdrop-blur-sm rounded-lg transition-all text-purple-300 hover:text-white border border-transparent hover:border-purple-500/30 lg:hidden"
 								title="Toggle sidebar"
 							>
 								<FiMenu size={18} />
@@ -432,8 +439,10 @@ export const ChatInterface = () => {
 						{/* Voice Selector */}
 						<div className="relative" ref={voiceMenuRef}>
 							<button
+								ref={voiceButtonRef}
 								onClick={() => setShowVoiceMenu(!showVoiceMenu)}
-								className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-xl rounded-xl border border-purple-500/40 hover:border-purple-400 hover:scale-105 transition-all group"
+								className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600/30 to-pink-600/30 backdrop-blur-xl rounded-xl border border-purple-500/30 hover:border-purple-400/50 hover:scale-105 transition-all group shadow-lg shadow-purple-500/10"
+								style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)' }}
 								title="Select voice"
 							>
 								<FiMusic size={14} className="text-purple-300 group-hover:text-purple-200" />
@@ -441,41 +450,10 @@ export const ChatInterface = () => {
 									{availableVoices.find(v => v.id === selectedVoice)?.emoji} {availableVoices.find(v => v.id === selectedVoice)?.name}
 								</span>
 							</button>
-							
-							{/* Voice Menu Popup */}
-							{showVoiceMenu && (
-								<div className="absolute top-full right-0 mt-2 w-48 bg-gradient-to-br from-slate-900/98 to-purple-900/98 backdrop-blur-2xl rounded-2xl border border-purple-500/40 shadow-2xl overflow-hidden z-50 animate-fade-in-up"
-									style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.4)' }}
-								>
-									<div className="p-2 space-y-1">
-										{availableVoices.map(voice => (
-											<button
-												key={voice.id}
-												onClick={() => {
-													setSelectedVoice(voice.id);
-													setShowVoiceMenu(false);
-													toast.success(`Voice changed to ${voice.name} ${voice.emoji}`);
-												}}
-												className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
-													selectedVoice === voice.id
-														? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-														: 'text-purple-200 hover:bg-purple-500/20 hover:text-white'
-												}`}
-											>
-												<span className="text-lg">{voice.emoji}</span>
-												<span className="text-sm font-medium">{voice.name}</span>
-												{selectedVoice === voice.id && (
-													<span className="ml-auto text-xs">✓</span>
-												)}
-											</button>
-										))}
-									</div>
-								</div>
-							)}
 						</div>
 						<button
 							onClick={() => setIsMinimized(true)}
-							className="p-2 hover:bg-purple-500/20 rounded-lg transition-colors text-purple-300 hover:text-white"
+							className="p-2 hover:bg-purple-500/30 backdrop-blur-sm rounded-lg transition-all text-purple-300 hover:text-white border border-transparent hover:border-purple-500/30"
 							title="Minimize"
 						>
 							<FiMinimize2 size={18} />
@@ -484,17 +462,21 @@ export const ChatInterface = () => {
 				</div>
 
 				{/* Messages */}
-				<div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-transparent">
+				<div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-transparent relative" style={{ zIndex: 1, isolation: 'isolate' }}>
 					{messages.map((msg, idx) => (
 						<div
 							key={idx}
 							className={`group flex ${msg.role === 'user' ? 'justify-end animate-slide-in-right' : 'justify-start animate-slide-in-left'}`}
 						>
 							<div
-								className={`max-w-[80%] p-3 rounded-2xl relative transition-all hover:scale-[1.02] ${msg.role === 'user'
-									? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
-									: 'bg-slate-800/80 text-purple-100 border border-purple-500/30 shadow-lg shadow-purple-500/20'
+								className={`max-w-[80%] p-3 rounded-2xl relative transition-all hover:scale-[1.02] backdrop-blur-sm ${msg.role === 'user'
+									? 'bg-gradient-to-r from-purple-600/90 to-pink-600/90 text-white shadow-lg shadow-purple-500/50 border border-purple-400/30'
+									: 'bg-slate-800/40 text-purple-100 border border-purple-500/20 shadow-lg shadow-purple-500/10 backdrop-blur-md'
 									}`}
+								style={msg.role === 'assistant' ? { 
+									boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+									background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(30, 41, 59, 0.4) 100%)'
+								} : {}}
 							>
 								<p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
 
@@ -518,14 +500,14 @@ export const ChatInterface = () => {
 									<div className="flex items-center gap-1 mt-2">
 										<button
 											onClick={() => playAudio(msg.content, selectedVoice, 'Talking')}
-											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white"
+											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/30 backdrop-blur-sm rounded transition-all text-purple-300/70 hover:text-white border border-transparent hover:border-purple-500/30"
 											title="Listen to audio"
 										>
 											<FiVolume2 size={12} />
 										</button>
 										<button
 											onClick={() => copyToClipboard(msg.content)}
-											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white"
+											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/30 backdrop-blur-sm rounded transition-all text-purple-300/70 hover:text-white border border-transparent hover:border-purple-500/30"
 											title="Copy message"
 										>
 											<FiCopy size={12} />
@@ -533,7 +515,7 @@ export const ChatInterface = () => {
 										<button
 											onClick={() => regenerateResponse(idx)}
 											disabled={isLoading}
-											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/30 backdrop-blur-sm rounded transition-all text-purple-300/70 hover:text-white border border-transparent hover:border-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
 											title="Regenerate response"
 										>
 											<FiRefreshCw size={12} />
@@ -545,7 +527,12 @@ export const ChatInterface = () => {
 					))}
 					{isLoading && (
 						<div className="flex justify-start">
-							<div className="bg-slate-800/80 text-purple-100 p-3 rounded-2xl border border-purple-500/30">
+							<div className="bg-slate-800/40 backdrop-blur-md text-purple-100 p-3 rounded-2xl border border-purple-500/20 shadow-lg shadow-purple-500/10"
+								style={{ 
+									boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+									background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(30, 41, 59, 0.4) 100%)'
+								}}
+							>
 								<div className="flex gap-1">
 									<div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
 									<div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -558,7 +545,7 @@ export const ChatInterface = () => {
 				</div>
 
 				{/* Input */}
-				<div className="p-4 border-t border-purple-500/30 bg-gradient-to-r from-purple-500/5 to-pink-500/5">
+				<div className="p-4 border-t border-purple-500/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
 					<div className="flex gap-2">
 						<input
 							type="text"
@@ -567,18 +554,62 @@ export const ChatInterface = () => {
 							onKeyPress={handleKeyPress}
 							placeholder="Type your message..."
 							disabled={isLoading}
-							className="flex-1 bg-slate-800/50 backdrop-blur-xl text-white placeholder-purple-300/50 px-4 py-3 rounded-xl border border-purple-500/30 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all shadow-inner"
+							className="flex-1 bg-slate-800/30 backdrop-blur-xl text-white placeholder-purple-300/50 px-4 py-3 rounded-xl border border-purple-500/20 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 transition-all shadow-lg"
+							style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)' }}
 						/>
 						<button
-							onClick={sendMessage}
+							onClick={() => sendMessage()}
 							disabled={isLoading || !inputMessage.trim()}
-							className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 rounded-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-transform"
+							className="bg-gradient-to-r from-purple-600/90 to-pink-600/90 backdrop-blur-sm text-white p-3 rounded-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-transform border border-purple-400/30 shadow-lg shadow-purple-500/20"
+							style={{ boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
 						>
 							<FiSend size={20} />
 						</button>
 					</div>
 				</div>
 			</div>
+
+			{/* Voice Menu Popup - Rendered via Portal */}
+			{showVoiceMenu && voiceButtonRef.current && (() => {
+				const rect = voiceButtonRef.current!.getBoundingClientRect();
+				return createPortal(
+					<div 
+						className="fixed w-48 bg-gradient-to-br from-slate-900/60 to-purple-900/60 backdrop-blur-3xl rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden animate-fade-in-up"
+						style={{ 
+							top: `${rect.bottom + 8}px`,
+							right: `${window.innerWidth - rect.right}px`,
+							boxShadow: '0 0 50px rgba(168, 85, 247, 0.3), inset 0 0 60px rgba(168, 85, 247, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+							background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(88, 28, 135, 0.6) 100%)',
+							zIndex: 10000
+						}}
+					>
+						<div className="p-2 space-y-1">
+							{availableVoices.map(voice => (
+								<button
+									key={voice.id}
+									onClick={() => {
+										setSelectedVoice(voice.id);
+										setShowVoiceMenu(false);
+										toast.success(`Voice changed to ${voice.name} ${voice.emoji}`);
+									}}
+									className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+										selectedVoice === voice.id
+											? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+											: 'text-purple-200 hover:bg-purple-500/20 hover:text-white'
+									}`}
+								>
+									<span className="text-lg">{voice.emoji}</span>
+									<span className="text-sm font-medium">{voice.name}</span>
+									{selectedVoice === voice.id && (
+										<span className="ml-auto text-xs">✓</span>
+									)}
+								</button>
+							))}
+						</div>
+					</div>,
+					document.body
+				);
+			})()}
 		</>
 	);
 };
