@@ -4,7 +4,7 @@ https://github.com/user-attachments/assets/7608965d-f700-49b8-94ff-6e018d22a374
 
 # 🌸 WaifUwU - AI Waifu Chat Assistant
 
-An interactive AI chat application featuring a fully animated 3D waifu character powered by Google Gemini AI and Speechify text-to-speech. Built with React Three Fiber, Express.js, and MongoDB for a modern, immersive conversational experience.
+An interactive AI chat application featuring a fully animated 3D waifu character powered by Google Gemini AI or local AI models (Ollama) and Speechify text-to-speech. Built with React Three Fiber, Express.js, and MongoDB for a modern, immersive conversational experience.
 
 ![WaifUwU](https://img.shields.io/badge/Status-Active-success)
 ![React](https://img.shields.io/badge/React-19.0-blue)
@@ -21,11 +21,13 @@ An interactive AI chat application featuring a fully animated 3D waifu character
 - **Interactive Controls** - OrbitControls for camera manipulation
 
 ### 🤖 AI-Powered Conversations
-- **Google Gemini AI** - Advanced language model with structured output
+- **Dual AI Support** - Choose between Google Gemini API or local AI models (Ollama)
+- **Easy Provider Switching** - Switch between AI providers via environment variables
 - **5 Personality Types** - Choose between Friendly, Tsundere, Kuudere, Dandere, or Yandere personalities
-- **Emotion Detection** - AI automatically selects appropriate character animations
+- **Emotion Detection** - AI automatically selects appropriate character animations (Idle, Angry, Shy, Greeting, Talking)
 - **Context-Aware Responses** - Maintains conversation history (last 20 messages)
 - **Response Caching** - Redis-based caching for frequently asked questions
+- **Privacy-First Option** - Use local AI models for complete data privacy
 
 ### 🎵 Text-to-Speech System
 - **Speechify API Integration** - High-quality voice synthesis
@@ -89,7 +91,9 @@ An interactive AI chat application featuring a fully animated 3D waifu character
 - **Redis 5.9** - In-memory caching
 - **JWT 9.0** - JSON Web Tokens
 - **bcrypt 6.0** - Password hashing
-- **Google Generative AI 0.24** - Gemini AI SDK
+- **AI Providers:**
+  - **Google Generative AI 0.24** - Gemini AI SDK
+  - **Ollama** - Local AI models (via Docker or direct install)
 - **Speechify API SDK 2.5** - Server-side TTS
 - **CORS 2.8** - Cross-origin resource sharing
 - **dotenv 16.6** - Environment variable management
@@ -100,7 +104,10 @@ An interactive AI chat application featuring a fully animated 3D waifu character
 - **Node.js 20+** - [Download](https://nodejs.org/)
 - **MongoDB** - [Download](https://www.mongodb.com/try/download/community) or use MongoDB Atlas
 - **Redis** (Optional) - [Download](https://redis.io/download) for caching
-- **Google Gemini API Key** - [Get API Key](https://makersuite.google.com/app/apikey)
+- **Docker** (Optional) - For running Ollama locally - [Download](https://www.docker.com/)
+- **AI Provider** (Choose one):
+  - **Google Gemini API Key** - [Get API Key](https://makersuite.google.com/app/apikey) OR
+  - **Ollama** - Local AI models - [Install Guide](backend/LOCAL_AI_SETUP.md)
 - **Speechify API Key** - [Get API Key](https://speechify.com/api)
 
 ### Quick Start
@@ -118,6 +125,8 @@ npm run setup
 
 #### 3. Configure Backend Environment
 Create `backend/.env`:
+
+**Option A: Using Gemini API (Default)**
 ```env
 # Server Configuration
 PORT=4000
@@ -125,7 +134,7 @@ NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/waifuwu
+MONGO_URI=mongodb://localhost:27017/waifuwu
 
 # Redis (Optional - app works without it)
 REDIS_URL=redis://localhost:6379
@@ -133,10 +142,40 @@ REDIS_URL=redis://localhost:6379
 # Authentication
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
 
-# AI Services
+# AI Provider - Gemini
+AI_PROVIDER=gemini
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# TTS Service
 SPEECHIFY_API_KEY=your_speechify_api_key_here
 ```
+
+**Option B: Using Local AI (Ollama)**
+```env
+# Server Configuration
+PORT=4000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+
+# Database
+MONGO_URI=mongodb://localhost:27017/waifuwu
+
+# Redis (Optional - app works without it)
+REDIS_URL=redis://localhost:6379
+
+# Authentication
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+
+# AI Provider - Local (Ollama)
+AI_PROVIDER=local
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2
+
+# TTS Service
+SPEECHIFY_API_KEY=your_speechify_api_key_here
+```
+
+**Note:** See [Local AI Setup Guide](backend/LOCAL_AI_SETUP.md) for detailed Ollama installation instructions.
 
 #### 4. Configure Frontend Environment
 Create `react/.env`:
@@ -144,7 +183,29 @@ Create `react/.env`:
 VITE_API_URL=http://localhost:4000
 ```
 
-#### 5. Start Development Servers
+#### 5. (Optional) Start Ollama for Local AI
+
+If using local AI (`AI_PROVIDER=local`), start Ollama:
+
+**Using Docker (Recommended):**
+```bash
+cd backend
+docker-compose up -d ollama
+docker exec -it waifuwu-ollama ollama pull llama3.2
+```
+
+**Or install Ollama directly:**
+- Windows: Download from [ollama.ai](https://ollama.ai/download)
+- Mac: `brew install ollama`
+- Linux: `curl -fsSL https://ollama.ai/install.sh | sh`
+
+Then start Ollama and pull a model:
+```bash
+ollama serve
+ollama pull llama3.2
+```
+
+#### 6. Start Development Servers
 
 **Terminal 1 - Backend:**
 ```bash
@@ -156,7 +217,7 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
-#### 6. Access the Application
+#### 7. Access the Application
 Open your browser and navigate to:
 ```
 http://localhost:5173
@@ -189,6 +250,24 @@ Choose from 5 distinct personalities:
 - Select from multiple Speechify voice profiles
 - Voice preference saved per conversation
 
+### Switching AI Providers
+You can switch between Gemini and Local AI anytime by updating your `.env` file:
+
+**Switch to Gemini:**
+```env
+AI_PROVIDER=gemini
+GEMINI_API_KEY=your_key_here
+```
+
+**Switch to Local AI:**
+```env
+AI_PROVIDER=local
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.2
+```
+
+Restart the backend server after changing providers. No code changes needed!
+
 ## 📁 Project Structure
 
 ```
@@ -211,15 +290,21 @@ WaifUwU/
 │   │   │   ├── authRoutes.js     # Auth endpoints
 │   │   │   └── chatRoutes.js     # Chat endpoints
 │   │   ├── services/
+│   │   │   ├── aiService.js      # Unified AI service (Gemini/Local)
 │   │   │   ├── geminiService.js  # Gemini AI integration
+│   │   │   ├── localAIService.js # Ollama/local AI integration
 │   │   │   ├── speechifyService.js # TTS integration
 │   │   │   ├── cacheService.js   # Redis caching
 │   │   │   └── audioStorageService.js # Audio management
+│   │   ├── utils/
+│   │   │   └── emotionValidator.js # Emotion type validation
 │   │   └── index.js              # Server entry point
 │   ├── public/
 │   │   └── audio/                # Generated audio files
 │   ├── package.json
-│   └── ENV_CONFIG.md             # Environment setup guide
+│   ├── docker-compose.yml        # Ollama Docker setup
+│   ├── ENV_CONFIG.md             # Environment setup guide
+│   └── LOCAL_AI_SETUP.md         # Local AI setup instructions
 ├── react/
 │   ├── src/
 │   │   ├── Components/
@@ -289,12 +374,14 @@ WaifUwU/
 3. Import and configure in `Avatar.tsx`
 
 ### Creating Custom Personalities
-Edit `backend/src/services/geminiService.js`:
+Edit `backend/src/services/geminiService.js` or `backend/src/services/localAIService.js`:
 ```javascript
 const PERSONALITIES = {
   custom: `Your custom personality prompt here...`
 };
 ```
+
+**Note:** Both services share the same personality definitions, so changes apply to both AI providers.
 
 ### Styling Customization
 - Global styles: `react/src/index.css`
@@ -335,6 +422,13 @@ redis-server
 - Verify Speechify API key is valid
 - Check browser console for errors
 - Ensure browser allows audio playback
+
+### Local AI (Ollama) Issues
+- **Connection Refused**: Ensure Ollama is running (`docker ps` or `ollama serve`)
+- **Model Not Found**: Pull the model with `ollama pull <model-name>`
+- **Slow Responses**: Use a smaller model (e.g., `llama3.2` instead of `llama3.1`)
+- **Out of Memory**: Use a smaller model or increase Docker memory limits
+- See [Local AI Setup Guide](backend/LOCAL_AI_SETUP.md) for detailed troubleshooting
 
 ### Build Errors
 ```bash
@@ -392,6 +486,7 @@ Contributions are welcome! Please follow these steps:
 ## 👏 Acknowledgments
 
 - **Google Gemini AI** - Advanced language model
+- **Ollama** - Local AI model hosting
 - **Speechify** - High-quality text-to-speech
 - **Ready Player Me** - 3D avatar creation
 - **Three.js & React Three Fiber** - 3D rendering

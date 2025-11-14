@@ -6,7 +6,7 @@ import { aiService } from '../services/aiService.js';
 import { speechifyService } from '../services/speechifyService.js';
 import { cacheService } from '../services/cacheService.js';
 import { audioStorageService } from '../services/audioStorageService.js';
-import { authenticate, optionalAuth } from '../middleware/auth.js';
+import { authenticate } from '../middleware/auth.js';
 import { validateEmotion } from '../utils/emotionValidator.js';
 import crypto from 'crypto';
 
@@ -16,15 +16,19 @@ const router = express.Router();
  * POST /api/chat/message
  * Send a message and get AI response with audio
  */
-router.post('/message', optionalAuth, async (req, res) => {
+router.post('/message', authenticate, async (req, res) => {
 	const startTime = Date.now();
 	
 	try {
-		const { message, conversationId } = req.body;
+		const { message, conversationId, regenerate } = req.body;
 		const userId = req.userId;
 
 		if (!message || !message.trim()) {
 			return res.status(400).json({ error: 'Message is required' });
+		}
+
+		if (!userId) {
+			return res.status(401).json({ error: 'Authentication required' });
 		}
 
 		// Get or create conversation
@@ -32,15 +36,11 @@ router.post('/message', optionalAuth, async (req, res) => {
 		
 		if (conversationId) {
 			conversation = await Conversation.findById(conversationId);
-			if (!conversation || (userId && conversation.userId.toString() !== userId.toString())) {
+			if (!conversation || conversation.userId.toString() !== userId.toString()) {
 				return res.status(404).json({ error: 'Conversation not found' });
 			}
 		} else {
 			// Create new conversation
-			if (!userId) {
-				return res.status(401).json({ error: 'Authentication required for new conversations' });
-			}
-			
 			conversation = new Conversation({
 				userId,
 				sessionId: crypto.randomUUID(),
@@ -49,10 +49,33 @@ router.post('/message', optionalAuth, async (req, res) => {
 			await conversation.save();
 		}
 
+		// If regenerating, remove the last assistant message and matching user message
+		if (regenerate) {
+			const lastAssistantMessage = await Message.findOne({ 
+				conversationId: conversation._id,
+				role: 'assistant'
+			}).sort({ createdAt: -1 });
+			
+			if (lastAssistantMessage) {
+				await Message.deleteOne({ _id: lastAssistantMessage._id });
+			}
+
+			// Also remove the last user message if it matches the current message
+			const lastUserMessage = await Message.findOne({ 
+				conversationId: conversation._id,
+				role: 'user',
+				content: message.trim()
+			}).sort({ createdAt: -1 });
+			
+			if (lastUserMessage) {
+				await Message.deleteOne({ _id: lastUserMessage._id });
+			}
+		}
+
 		// Create user message
 		const userMessage = new Message({
 			conversationId: conversation._id,
-			userId: userId || conversation.userId,
+			userId,
 			role: 'user',
 			content: message.trim()
 		});
@@ -71,17 +94,23 @@ router.post('/message', optionalAuth, async (req, res) => {
 			content: msg.content
 		}));
 
-		// Check cache
-		const cacheKey = crypto.createHash('md5').update(message.toLowerCase().trim()).digest('hex');
-		const cachedResponse = await cacheService.getCachedResponse(cacheKey);
-
+		// Check cache (skip if regenerating)
 		let aiResponse, emotion, tokens = 0;
+		let cachedResponse = null;
 
-		if (cachedResponse && cachedResponse.timestamp > Date.now() - 300000) {
-			// Use cached response (validate emotion to ensure it matches frontend types)
-			({ text: aiResponse } = cachedResponse);
-			emotion = validateEmotion(cachedResponse.emotion);
-		} else {
+		if (!regenerate) {
+			const cacheKey = crypto.createHash('md5').update(message.toLowerCase().trim()).digest('hex');
+			cachedResponse = await cacheService.getCachedResponse(cacheKey);
+
+			if (cachedResponse && cachedResponse.timestamp > Date.now() - 300000) {
+				// Use cached response (validate emotion to ensure it matches frontend types)
+				({ text: aiResponse } = cachedResponse);
+				emotion = validateEmotion(cachedResponse.emotion);
+			}
+		}
+
+		// Generate new response if not cached or if regenerating
+		if (!cachedResponse || regenerate) {
 			// Generate AI response (uses configured provider: Gemini or Local AI)
 			const aiResponseData = await aiService.generateResponse(
 				conversationHistory,
@@ -93,18 +122,21 @@ router.post('/message', optionalAuth, async (req, res) => {
 			emotion = aiResponseData.emotion;
 			tokens = aiResponseData.tokens || 0;
 
-			// Cache the response
-			await cacheService.cacheResponse(cacheKey, {
-				text: aiResponse,
-				emotion,
-				timestamp: Date.now()
-			});
+			// Cache the response (unless regenerating, to allow different responses)
+			if (!regenerate) {
+				const cacheKey = crypto.createHash('md5').update(message.toLowerCase().trim()).digest('hex');
+				await cacheService.cacheResponse(cacheKey, {
+					text: aiResponse,
+					emotion,
+					timestamp: Date.now()
+				});
+			}
 		}
 
 		// Create assistant message (save first to get ID)
 		const assistantMessage = new Message({
 			conversationId: conversation._id,
-			userId: userId || conversation.userId,
+			userId,
 			role: 'assistant',
 			content: aiResponse,
 			metadata: {
@@ -124,11 +156,9 @@ router.post('/message', optionalAuth, async (req, res) => {
 		await conversation.updateStats('assistant', tokens, responseTime);
 
 		// Update user stats
-		if (userId) {
-			const user = await User.findById(userId);
-			if (user) {
-				await user.incrementMessageCount();
-			}
+		const user = await User.findById(userId);
+		if (user) {
+			await user.incrementMessageCount();
 		}
 
 		// Update cache
@@ -384,7 +414,7 @@ router.post('/conversations/new', authenticate, async (req, res) => {
  * GET /api/chat/tts-token
  * Get Speechify access token for frontend
  */
-router.get('/tts-token', optionalAuth, async (req, res) => {
+router.get('/tts-token', authenticate, async (req, res) => {
 	try {
 		const tokenData = await speechifyService.issueAccessToken('audio:all');
 		
@@ -402,7 +432,7 @@ router.get('/tts-token', optionalAuth, async (req, res) => {
  * GET /api/chat/voices
  * Get available TTS voices
  */
-router.get('/voices', async (req, res) => {
+router.get('/voices', authenticate, async (req, res) => {
 	try {
 		const voices = await speechifyService.getVoices();
 		res.json({ voices });

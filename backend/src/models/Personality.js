@@ -63,10 +63,6 @@ const personalitySchema = new mongoose.Schema({
 			default: 1.0
 		}
 	},
-	isPremium: {
-		type: Boolean,
-		default: false
-	},
 	isActive: {
 		type: Boolean,
 		default: true

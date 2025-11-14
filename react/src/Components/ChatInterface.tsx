@@ -257,23 +257,27 @@ export const ChatInterface = () => {
 		toast.success('Copied to clipboard!');
 	};
 
-	const sendMessage = async () => {
-		if (!inputMessage.trim() || isLoading) return;
+	const sendMessage = async (messageText?: string, isRegenerate = false) => {
+		const messageToSend = messageText || inputMessage.trim();
+		if (!messageToSend || isLoading) return;
 
 		const userMessage: Message = {
 			role: 'user',
-			content: inputMessage.trim(),
+			content: messageToSend,
 			timestamp: new Date(),
 		};
 
 		setMessages(prev => [...prev, userMessage]);
-		setInputMessage('');
+		if (!messageText) {
+			setInputMessage('');
+		}
 		setIsLoading(true);
 
 		try {
 			const response: ChatResponse = await chatAPI.sendMessage(
 				userMessage.content,
-				sessionId || undefined
+				sessionId || undefined,
+				isRegenerate
 			);
 
 			// Set sessionId if it was just created (use conversationId from response)
@@ -305,6 +309,23 @@ export const ChatInterface = () => {
 		} finally {
 			setIsLoading(false);
 		}
+	};
+
+	const regenerateResponse = async (messageIndex: number) => {
+		// Find the user message that came before this assistant message
+		const previousUserMessage = messages[messageIndex - 1];
+		
+		if (!previousUserMessage || previousUserMessage.role !== 'user') {
+			toast.error('No previous message found to regenerate');
+			return;
+		}
+
+		// Remove the assistant message and the previous user message
+		setMessages(prev => prev.slice(0, messageIndex - 1));
+		
+		// Resend the user message with regenerate flag
+		toast.info('Regenerating response...');
+		await sendMessage(previousUserMessage.content, true);
 	};
 
 	const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -402,7 +423,7 @@ export const ChatInterface = () => {
 										Speaking...
 									</span>
 								) : (
-									'Powered by Gemini AI'
+									'Powered by AI'
 								)}
 							</p>
 						</div>
@@ -510,11 +531,9 @@ export const ChatInterface = () => {
 											<FiCopy size={12} />
 										</button>
 										<button
-											onClick={() => {
-												setInputMessage(messages[idx - 1]?.content || '');
-												toast.info('Regenerating response...');
-											}}
-											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white"
+											onClick={() => regenerateResponse(idx)}
+											disabled={isLoading}
+											className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-purple-500/20 rounded transition-all text-purple-300/70 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
 											title="Regenerate response"
 										>
 											<FiRefreshCw size={12} />
