@@ -195,20 +195,17 @@ router.post('/message', authenticate, async (req, res) => {
  */
 router.get('/conversations', authenticate, async (req, res) => {
 	try {
-		const { page = 1, limit = 20, archived = false } = req.query;
+		const { page = 1, limit = 20 } = req.query;
 		
 		const conversations = await Conversation.find({
-			userId: req.userId,
-			isArchived: archived === 'true'
+			userId: req.userId
 		})
-		.sort({ isPinned: -1, 'stats.lastActive': -1 })
+		.sort({ 'stats.lastActive': -1 })
 		.skip((page - 1) * limit)
-		.limit(parseInt(limit))
-		.select('-sharedWith');
+		.limit(parseInt(limit));
 
 		const total = await Conversation.countDocuments({
-			userId: req.userId,
-			isArchived: archived === 'true'
+			userId: req.userId
 		});
 
 		res.json({
@@ -240,8 +237,7 @@ router.get('/conversations/:id', authenticate, async (req, res) => {
 		}
 
 		const messages = await Message.find({
-			conversationId: conversation._id,
-			isDeleted: false
+			conversationId: conversation._id
 		})
 		.sort({ createdAt: 1 })
 		.select('-__v');
@@ -304,10 +300,9 @@ router.put('/conversations/:id', authenticate, async (req, res) => {
 			return res.status(404).json({ error: 'Conversation not found' });
 		}
 
-		const { title, tags, settings } = req.body;
+		const { title, settings } = req.body;
 
 		if (title) conversation.title = title;
-		if (tags) conversation.tags = tags;
 		if (settings) conversation.settings = { ...conversation.settings, ...settings };
 
 		await conversation.save();
@@ -317,56 +312,6 @@ router.put('/conversations/:id', authenticate, async (req, res) => {
 	} catch (error) {
 		console.error('Update conversation error:', error);
 		res.status(500).json({ error: 'Failed to update conversation' });
-	}
-});
-
-/**
- * POST /api/chat/conversations/:id/pin
- * Toggle pin conversation
- */
-router.post('/conversations/:id/pin', authenticate, async (req, res) => {
-	try {
-		const conversation = await Conversation.findOne({
-			_id: req.params.id,
-			userId: req.userId
-		});
-
-		if (!conversation) {
-			return res.status(404).json({ error: 'Conversation not found' });
-		}
-
-		await conversation.togglePin();
-
-		res.json({ 
-			success: true, 
-			isPinned: conversation.isPinned 
-		});
-
-	} catch (error) {
-		res.status(500).json({ error: 'Failed to pin conversation' });
-	}
-});
-
-/**
- * POST /api/chat/conversations/:id/archive
- */
-router.post('/conversations/:id/archive', authenticate, async (req, res) => {
-	try {
-		const conversation = await Conversation.findOne({
-			_id: req.params.id,
-			userId: req.userId
-		});
-
-		if (!conversation) {
-			return res.status(404).json({ error: 'Conversation not found' });
-		}
-
-		await conversation.archive();
-
-		res.json({ success: true });
-
-	} catch (error) {
-		res.status(500).json({ error: 'Failed to archive conversation' });
 	}
 });
 

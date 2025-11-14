@@ -18,15 +18,6 @@ const conversationSchema = new mongoose.Schema({
 		default: 'New Conversation',
 		maxlength: 100
 	},
-	summary: {
-		type: String,
-		default: '',
-		maxlength: 500
-	},
-	tags: [{
-		type: String,
-		trim: true
-	}],
 	settings: {
 		personality: {
 			type: String,
@@ -74,41 +65,13 @@ const conversationSchema = new mongoose.Schema({
 			default: Date.now
 		}
 	},
-	isPinned: {
-		type: Boolean,
-		default: false
-	},
-	isArchived: {
-		type: Boolean,
-		default: false
-	},
-	isFavorite: {
-		type: Boolean,
-		default: false
-	},
-	sharedWith: [{
-		userId: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'User'
-		},
-		permission: {
-			type: String,
-			enum: ['view', 'edit'],
-			default: 'view'
-		},
-		sharedAt: {
-			type: Date,
-			default: Date.now
-		}
-	}]
 }, {
 	timestamps: true
 });
 
 // Indexes for efficient queries
 conversationSchema.index({ userId: 1, createdAt: -1 });
-conversationSchema.index({ userId: 1, isPinned: -1, 'stats.lastActive': -1 });
-conversationSchema.index({ 'stats.lastActive': 1 }, { expireAfterSeconds: 2592000 }); // 30 days TTL
+conversationSchema.index({ userId: 1, 'stats.lastActive': -1 });
 
 // Update stats
 conversationSchema.methods.updateStats = function(messageRole, tokens, responseTime) {
@@ -142,22 +105,5 @@ conversationSchema.methods.generateTitle = async function() {
 	}
 };
 
-// Archive conversation
-conversationSchema.methods.archive = function() {
-	this.isArchived = true;
-	return this.save();
-};
-
-// Pin conversation
-conversationSchema.methods.togglePin = function() {
-	this.isPinned = !this.isPinned;
-	return this.save();
-};
-
-// Toggle favorite
-conversationSchema.methods.toggleFavorite = function() {
-	this.isFavorite = !this.isFavorite;
-	return this.save();
-};
 
 export const Conversation = mongoose.model('Conversation', conversationSchema);
