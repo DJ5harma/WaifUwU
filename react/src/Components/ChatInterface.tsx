@@ -403,7 +403,7 @@ export const ChatInterface = () => {
 				/>
 			)}
 			<div
-				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/40 to-purple-900/40 backdrop-blur-3xl rounded-3xl shadow-2xl flex flex-col z-30 border border-purple-500/30 animate-fade-in-up animate-glow-pulse"
+				className="fixed right-6 top-6 bottom-6 w-96 bg-gradient-to-br from-slate-900/40 to-purple-900/40 backdrop-blur-3xl rounded-3xl shadow-2xl flex flex-col z-30 border border-purple-500/30 animate-fade-in-up animate-glow-pulse overflow-hidden"
 				style={{ 
 					boxShadow: '0 0 80px rgba(168, 85, 247, 0.3), inset 0 0 100px rgba(168, 85, 247, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
 					background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(88, 28, 135, 0.4) 100%)'
