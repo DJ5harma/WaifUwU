@@ -20,7 +20,7 @@ router.post('/message', authenticate, async (req, res) => {
 	const startTime = Date.now();
 	
 	try {
-		const { message, conversationId } = req.body;
+		const { message, conversationId, regenerate } = req.body;
 		const userId = req.userId;
 
 		if (!message || !message.trim()) {
@@ -49,6 +49,29 @@ router.post('/message', authenticate, async (req, res) => {
 			await conversation.save();
 		}
 
+		// If regenerating, remove the last assistant message and matching user message
+		if (regenerate) {
+			const lastAssistantMessage = await Message.findOne({ 
+				conversationId: conversation._id,
+				role: 'assistant'
+			}).sort({ createdAt: -1 });
+			
+			if (lastAssistantMessage) {
+				await Message.deleteOne({ _id: lastAssistantMessage._id });
+			}
+
+			// Also remove the last user message if it matches the current message
+			const lastUserMessage = await Message.findOne({ 
+				conversationId: conversation._id,
+				role: 'user',
+				content: message.trim()
+			}).sort({ createdAt: -1 });
+			
+			if (lastUserMessage) {
+				await Message.deleteOne({ _id: lastUserMessage._id });
+			}
+		}
+
 		// Create user message
 		const userMessage = new Message({
 			conversationId: conversation._id,
@@ -71,17 +94,23 @@ router.post('/message', authenticate, async (req, res) => {
 			content: msg.content
 		}));
 
-		// Check cache
-		const cacheKey = crypto.createHash('md5').update(message.toLowerCase().trim()).digest('hex');
-		const cachedResponse = await cacheService.getCachedResponse(cacheKey);
-
+		// Check cache (skip if regenerating)
 		let aiResponse, emotion, tokens = 0;
+		let cachedResponse = null;
 
-		if (cachedResponse && cachedResponse.timestamp > Date.now() - 300000) {
-			// Use cached response (validate emotion to ensure it matches frontend types)
-			({ text: aiResponse } = cachedResponse);
-			emotion = validateEmotion(cachedResponse.emotion);
-		} else {
+		if (!regenerate) {
+			const cacheKey = crypto.createHash('md5').update(message.toLowerCase().trim()).digest('hex');
+			cachedResponse = await cacheService.getCachedResponse(cacheKey);
+
+			if (cachedResponse && cachedResponse.timestamp > Date.now() - 300000) {
+				// Use cached response (validate emotion to ensure it matches frontend types)
+				({ text: aiResponse } = cachedResponse);
+				emotion = validateEmotion(cachedResponse.emotion);
+			}
+		}
+
+		// Generate new response if not cached or if regenerating
+		if (!cachedResponse || regenerate) {
 			// Generate AI response (uses configured provider: Gemini or Local AI)
 			const aiResponseData = await aiService.generateResponse(
 				conversationHistory,
@@ -93,12 +122,15 @@ router.post('/message', authenticate, async (req, res) => {
 			emotion = aiResponseData.emotion;
 			tokens = aiResponseData.tokens || 0;
 
-			// Cache the response
-			await cacheService.cacheResponse(cacheKey, {
-				text: aiResponse,
-				emotion,
-				timestamp: Date.now()
-			});
+			// Cache the response (unless regenerating, to allow different responses)
+			if (!regenerate) {
+				const cacheKey = crypto.createHash('md5').update(message.toLowerCase().trim()).digest('hex');
+				await cacheService.cacheResponse(cacheKey, {
+					text: aiResponse,
+					emotion,
+					timestamp: Date.now()
+				});
+			}
 		}
 
 		// Create assistant message (save first to get ID)

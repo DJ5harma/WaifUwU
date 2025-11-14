@@ -128,10 +128,11 @@ export const chatAPI = {
 	/**
 	 * Send a message to the AI
 	 */
-	async sendMessage(message: string, conversationId?: string): Promise<ChatResponse> {
+	async sendMessage(message: string, conversationId?: string, regenerate?: boolean): Promise<ChatResponse> {
 		const response = await api.post('/api/chat/message', {
 			message,
 			conversationId,
+			regenerate,
 		});
 		return response.data;
 	},
