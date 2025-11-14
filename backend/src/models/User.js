@@ -73,59 +73,10 @@ const userSchema = new mongoose.Schema({
 			default: Date.now
 		}
 	},
-	subscription: {
-		tier: {
-			type: String,
-			enum: ['free', 'premium', 'pro'],
-			default: 'free'
-		},
-		startDate: {
-			type: Date,
-			default: Date.now
-		},
-		endDate: {
-			type: Date,
-			default: null
-		},
-		features: {
-			maxConversationsPerDay: {
-				type: Number,
-				default: 50
-			},
-			maxMessagesPerConversation: {
-				type: Number,
-				default: 100
-			},
-			customVoices: {
-				type: Boolean,
-				default: false
-			},
-			advancedPersonalities: {
-				type: Boolean,
-				default: false
-			}
-		}
-	},
 	isActive: {
 		type: Boolean,
 		default: true
 	},
-	isVerified: {
-		type: Boolean,
-		default: false
-	},
-	verificationToken: {
-		type: String,
-		default: null
-	},
-	resetPasswordToken: {
-		type: String,
-		default: null
-	},
-	resetPasswordExpires: {
-		type: Date,
-		default: null
-	}
 }, {
 	timestamps: true
 });
@@ -167,7 +118,6 @@ userSchema.methods.toPublicJSON = function() {
 		username: this.username,
 		displayName: this.displayName,
 		avatar: this.avatar,
-		subscription: this.subscription.tier,
 		stats: {
 			totalConversations: this.stats.totalConversations,
 			totalMessages: this.stats.totalMessages

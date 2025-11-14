@@ -74,26 +74,21 @@ export interface User {
 	email: string;
 	displayName?: string;
 	avatar?: string;
-	subscription: {
-		tier: 'free' | 'premium' | 'pro';
-		features: {
-			maxConversationsPerDay: number;
-			maxMessagesPerConversation: number;
-		};
-	};
 	preferences?: {
 		defaultPersonality?: string;
 		defaultVoice?: string;
 		theme?: string;
 	};
+	stats?: {
+		totalConversations?: number;
+		totalMessages?: number;
+	};
 	createdAt: Date;
-	lastActive: Date;
 }
 
 export interface AuthResponse {
 	token: string;
 	user: User;
-	isGuest?: boolean;
 }
 
 export interface UserResponse {
@@ -235,26 +230,10 @@ export const authAPI = {
 	},
 
 	/**
-	 * Create guest session
-	 */
-	async createGuest(): Promise<AuthResponse> {
-		const response = await api.post('/api/auth/guest');
-		return response.data;
-	},
-
-	/**
 	 * Get current user
 	 */
 	async getMe(): Promise<UserResponse> {
 		const response = await api.get('/api/auth/me');
-		return response.data;
-	},
-
-	/**
-	 * Update profile
-	 */
-	async updateProfile(data: Partial<Pick<User, 'displayName' | 'avatar' | 'preferences'>>): Promise<UserResponse> {
-		const response = await api.put('/api/auth/profile', data);
 		return response.data;
 	},
 };

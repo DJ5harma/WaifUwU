@@ -183,7 +183,7 @@ export const ConversationSidebar = ({
 							{user?.displayName || user?.username || 'User'}
 						</p>
 						<p className="text-purple-300/70 text-xs truncate">
-							{user?.email || 'Guest'}
+							{user?.email || user?.username || 'Not logged in'}
 						</p>
 					</div>
 					<button
