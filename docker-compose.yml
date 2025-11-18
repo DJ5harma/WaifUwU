@@ -8,20 +8,23 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-    # Uncomment the following lines if you want to use GPU acceleration (requires nvidia-docker)
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
-    restart: unless-stopped
-    # Optional: Set environment variables
     environment:
       - OLLAMA_HOST=0.0.0.0
       - OLLAMA_KEEP_ALIVE=24h
+    # Request one GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: ["gpu"]
+    # Also explicitly request GPUs for docker-compose/docker engine that supports it
+    # device_requests:
+    #   - driver: nvidia
+    #     count: 1
+    #     device_ids: ["0"]     # optional: omit or set ["all"]
+    #     capabilities: ["gpu"]
+    restart: unless-stopped
 
 volumes:
   ollama_data:
-
